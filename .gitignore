@@ -1,0 +1,20 @@
+# Environment Variables & Secrets
+.env
+.env.local
+.env.production
+
+# Dependencies
+node_modules/
+**/node_modules/
+package-lock.json
+
+# Data Storage
+data/
+
+# Android Build Outputs
+android/app/build/
+android/.gradle/
+android/local.properties
+
+# Log files
+*.log

@@ -1,0 +1,217 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    height: 100%;
+    overflow: hidden;
+    overflow-x: hidden;
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    transition: background .35s ease, color .35s ease;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Base App Layout (Mobile First: Phone) */
+#app {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    margin: 0 auto;
+    background-color: var(--bg);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Screen Container */
+.screen-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    padding: 16px 16px calc(105px + env(safe-area-inset-bottom, 20px)) 16px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Screen Views */
+.screen {
+    display: none;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom Scrollbar for Desktop / Tablet */
+.screen-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.screen-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.screen-container::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.screen-container::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+}
+
+/* Typography Base */
+h1, h2, h3, h4, h5, h6, .display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+.mono {
+    font-family: var(--font-mono);
+}
+
+.overline {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--primary-600);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+[data-theme="dark"] .overline {
+    color: var(--primary-500);
+}
+
+.overline::before {
+    content: '';
+    width: 14px;
+    height: 1.5px;
+    background: var(--primary-500);
+    display: inline-block;
+}
+
+h1 {
+    font-size: 1.75rem;
+    line-height: 1.25;
+}
+
+h2 {
+    font-size: 1.35rem;
+    line-height: 1.3;
+}
+
+h3 {
+    font-size: 1.1rem;
+}
+
+p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+button {
+    font-family: var(--font-body);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background: none;
+    transition: var(--transition);
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* Breakpoint 1: Small Tablet / Large Phones (600px - 991px) */
+@media (min-width: 600px) and (max-width: 991px) {
+    #app {
+        max-width: 720px;
+        height: 94vh;
+        margin: 3vh auto;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border);
+        overflow: hidden;
+    }
+
+    .screen-container {
+        padding: 28px 28px calc(var(--bottom-nav-height) + 24px) 28px;
+    }
+}
+
+/* Breakpoint 2: Laptop & Desktop PC (992px+) */
+@media (min-width: 992px) {
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--surface-secondary);
+    }
+
+    #app {
+        flex-direction: row;
+        max-width: 1240px;
+        height: 90vh;
+        margin: 0 auto;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border);
+        overflow: hidden;
+        background-color: var(--background);
+    }
+
+    .screen-container {
+        padding: 36px 40px 36px 40px;
+    }
+
+    .screen {
+        max-width: 920px;
+    }
+}
+
+/* Breakpoint 3: Ultra-wide Monitors (1440px+) */
+@media (min-width: 1440px) {
+    #app {
+        max-width: 1360px;
+        height: 86vh;
+    }
+
+    .screen-container {
+        padding: 44px 56px;
+    }
+}

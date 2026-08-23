@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Bloom - Focus & Study</title>
+
+    <!-- Brand Identity Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <!-- CSS Modules -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <!-- Flaticon UICons -->
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
+
+    <!-- Google Identity Services SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- html2canvas for Strava-style transparent image generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <!-- Loading Screen Overlay with animated.svg -->
+    <div id="loading-screen" class="loading-screen-overlay">
+        <div class="loading-screen-content">
+            <img src="assets/animated.svg" alt="Bloom" class="loading-logo">
+            <h1 class="loading-brand-title">Bloom</h1>
+            <p class="loading-brand-tagline">Focus &amp; Study</p>
+            <div class="loading-progress-bar">
+                <div class="loading-progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <!-- Main Screen Container -->
+        <main class="screen-container">
+
+            <!-- 0. FULL SCREEN AUTHENTICATION PAGE -->
+            <section id="screen-auth" class="screen full-screen-auth">
+                <!-- Ambient Floating Logo Background -->
+                <div class="auth-bg-ambient">
+                    <img src="assets/animated.svg" class="bg-logo bg-logo-1" alt="">
+                    <img src="assets/animated.svg" class="bg-logo bg-logo-2" alt="">
+                    <img src="assets/animated.svg" class="bg-logo bg-logo-3" alt="">
+                    <img src="assets/animated.svg" class="bg-logo bg-logo-4" alt="">
+                </div>
+
+                <div class="auth-page-container">
+                    <div class="auth-brand-header">
+                        <img src="assets/animated.svg" alt="Bloom" class="auth-brand-logo">
+                        <h1 class="auth-brand-title">Bloom</h1>
+                        <p class="auth-brand-tagline">Focus &amp; Study Companion</p>
+                    </div>
+
+                    <div class="auth-card-panel">
+                        <div style="text-align: center; margin-bottom: 24px;">
+                            <h2 class="auth-title" id="auth-page-title" style="font-size: 1.4rem; margin-bottom: 6px;">Sign In to Bloom</h2>
+                            <p class="auth-subtitle" id="auth-page-sub" style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.5;">Sign in with your Google account to track study sessions, earn XP, and join live rooms.</p>
+                        </div>
+
+                        <!-- Official Google Auth Button -->
+                        <button type="button" class="btn-google" id="btn-google-auth-page" style="padding: 14px 20px; font-size: 0.95rem; width: 100%;">
+                            <svg class="google-icon" viewBox="0 0 24 24" width="22" height="22">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                            </svg>
+                            <span>Sign in with Google</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. HOME SCREEN -->
+            <section id="screen-home" class="screen active">
+                <div class="header-bar">
+                    <div class="user-badge">
+                        <div class="avatar" id="home-user-avatar">M</div>
+                        <div>
+                            <p class="overline" style="margin-bottom: 2px;" id="home-user-level">Level 1 · Novice Scholar</p>
+                            <h2 id="home-greeting">Good morning</h2>
+                        </div>
+                    </div>
+                    <div class="chip chip-streak">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c2 3-1 4-1 7a4 4 0 108 0c0-2-1-3-2-4 1 4-1 5-2 5-2 0-1-3-3-8z"/><path d="M8 14a4 4 0 108 0c0-2.5-2-4-4-9-2 5-4 6.5-4 9z"/></svg>
+                        <span id="home-streak">1 Day</span>
+                    </div>
+                </div>
+
+                <!-- Responsive Grid Wrapper for Desktop/Tablet -->
+                <div class="home-grid">
+                    <!-- Left Column -->
+                    <div class="grid-col">
+                        <!-- Daily Goal Card (Clickable to view detailed stats modal) -->
+                        <div class="card hover-card" id="home-daily-goal-card" style="cursor: pointer;">
+                            <p class="card-eyebrow">Today's Progress <i class="fi fi-rr-expand-arrows" style="font-size: 0.75rem; float: right; opacity: 0.7;"></i></p>
+                            <div class="card-header">
+                                <span class="card-title">Daily Study Goal</span>
+                                <span id="home-goal-percent" class="chip chip-success">0%</span>
+                            </div>
+                            <div style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-mono); margin-bottom: 6px;" id="home-study-time">0m</div>
+                            <p style="font-size: 0.85rem;" id="home-goal-target-text">Target: 25m deep focus</p>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" id="home-goal-bar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- XP & Streak Quick Stats Grid -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <span class="stat-label">Total XP</span>
+                                    <span class="chip chip-xp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.8L21 11l-6.6 2.2L12 20l-2.4-6.8L3 11l6.6-2.2z"/></svg>+0</span>
+                                </div>
+                                <span class="stat-value" id="home-xp">0 XP</span>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-card-header">
+                                    <span class="stat-label">Current Streak</span>
+                                    <span class="chip chip-streak"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c2 3-1 4-1 7a4 4 0 108 0c0-2-1-3-2-4 1 4-1 5-2 5-2 0-1-3-3-8z"/><path d="M8 14a4 4 0 108 0c0-2.5-2-4-4-9-2 5-4 6.5-4 9z"/></svg>Active</span>
+                                </div>
+                                <span class="stat-value" style="color: var(--streak);" id="home-streak-val">1 Day</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="grid-col">
+                        <!-- Start Focus Hero Action -->
+                        <button id="home-start-focus-btn" class="btn-primary hero-btn" style="margin-bottom: 16px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            <span>Start Focus Session</span>
+                        </button>
+
+                        <!-- Flashcard Shortcut Card -->
+                        <div class="card hover-card" id="home-flashcard-shortcut" style="cursor: pointer;">
+                            <div class="card-header" style="margin-bottom: 0;">
+                                <div>
+                                    <p class="card-eyebrow" style="margin-bottom: 4px;">Memory Recall</p>
+                                    <div class="card-title">Flashcard Decks</div>
+                                    <p style="font-size: 0.85rem; margin-top: 2px;">Review active decks & terms</p>
+                                </div>
+                                <button class="btn-secondary">Open</button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Study Sessions -->
+                        <div class="card">
+                            <p class="card-eyebrow">History</p>
+                            <div class="card-header">
+                                <span class="card-title">Recent Sessions</span>
+                            </div>
+                            <div id="home-recent-sessions">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. FOCUS SCREEN -->
+            <section id="screen-focus" class="screen">
+                <div class="focus-wrapper card card-focus" id="focus-card-wrapper">
+                    <div class="focus-landscape-layout">
+                        <!-- Left Column: Timer Ring & Controls -->
+                        <div class="focus-left-col">
+                            <div class="timer-ring-container">
+                                <svg class="timer-ring-svg" viewBox="0 0 100 100">
+                                    <circle class="timer-ring-bg" cx="50" cy="50" r="42" />
+                                    <circle class="timer-ring-progress" id="timer-progress-circle" cx="50" cy="50" r="42" />
+                                </svg>
+                                <div class="timer-center-content">
+                                    <div class="timer-display" id="timer-display">25:00</div>
+                                    <div class="timer-mode" id="timer-center-label">Study Mode</div>
+                                </div>
+                            </div>
+
+                            <div class="timer-controls">
+                                <button id="timer-start-btn" class="timer-btn btn-primary">Start Session</button>
+                                <button id="timer-pause-btn" class="timer-btn btn-secondary" style="display: none;">Pause</button>
+                                <button id="timer-reset-btn" class="timer-btn btn-outline" style="display: none;">Reset</button>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Info Header, Presets & Settings -->
+                        <div class="focus-right-col">
+                            <div class="focus-header-info">
+                                <span class="chip chip-focus" id="timer-mode-badge" style="margin-bottom: 8px;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <span id="timer-mode-label">Study Session</span>
+                                </span>
+                                <h2 style="margin-bottom: 4px;" id="timer-mode-title">Deep Work Session</h2>
+                                <p id="timer-mode-sub" style="font-size: 0.88rem; color: var(--text-secondary);">Study timer with loud completion alarm</p>
+                            </div>
+
+                            <!-- Preset Quick Select Chips -->
+                            <div style="margin-top: 20px;">
+                                <span class="form-label" style="font-size: 0.76rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: block;">QUICK PRESETS</span>
+                                <div class="preset-chip-group">
+                                    <button type="button" class="preset-chip active" data-study="25" data-break="5">25m / 5m Break</button>
+                                    <button type="button" class="preset-chip" data-study="50" data-break="10">50m / 10m Break</button>
+                                    <button type="button" class="preset-chip" data-study="15" data-break="3">15m / 3m Break</button>
+                                    <button type="button" class="preset-chip" data-study="1" data-break="1"><i class="fi fi-rr-bolt" style="margin-right: 4px;"></i> 1m Quick</button>
+                                </div>
+                            </div>
+
+                            <!-- Customizable Duration Settings Card -->
+                            <div class="timer-settings-card">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                                    <span class="card-eyebrow" style="margin-bottom: 0;">Edit Timer Clock</span>
+                                    <button type="button" class="btn-ghost" id="btn-test-alarm" style="padding: 4px 10px; font-size: 0.8rem; color: var(--streak);">
+                                        <span><i class="fi fi-rr-bell" style="margin-right: 4px;"></i> Test Alarm</span>
+                                    </button>
+                                </div>
+                                <div class="timer-inputs-row">
+                                    <div>
+                                        <label class="form-label" style="font-size: 0.78rem;">Study (Mins)</label>
+                                        <input type="number" id="input-study-mins" class="timer-num-input" value="25" min="1" max="180">
+                                    </div>
+                                    <div>
+                                        <label class="form-label" style="font-size: 0.78rem;">Break (Mins)</label>
+                                        <input type="number" id="input-break-mins" class="timer-num-input" value="5" min="1" max="60">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. FLASHCARDS SCREEN -->
+            <section id="screen-flashcards" class="screen">
+                <p class="overline">Study &amp; Memory</p>
+                <div class="screen-header-bar">
+                    <div class="screen-header-title">
+                        <h2>My Decks</h2>
+                        <p>Space-repetition active recall</p>
+                    </div>
+                    <div class="screen-header-actions" style="display: flex; gap: 8px;">
+                        <button class="btn-outline" id="btn-open-import-deck-modal" style="padding: 8px 14px; font-size: 0.82rem;"><i class="fi fi-rr-download" style="margin-right: 6px;"></i> Import Deck by ID</button>
+                        <button class="btn-primary" id="create-deck-btn">+ Create Deck</button>
+                    </div>
+                </div>
+
+                <div id="flashcards-deck-list" class="responsive-deck-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- 4. PROGRESS SCREEN -->
+            <section id="screen-progress" class="screen">
+                <p class="overline">Analytics</p>
+                <div style="margin-bottom: 20px;">
+                    <h2>Your Progress</h2>
+                    <p>Habits, milestones &amp; statistics</p>
+                </div>
+
+                <div class="responsive-two-col">
+                    <div class="grid-col">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="stat-label">Total Time</span>
+                                <span class="stat-value" id="progress-total-hours">42.5 hrs</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-label">Earned XP</span>
+                                <span class="stat-value" id="progress-xp">1,250</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <p class="card-eyebrow">Level Milestone</p>
+                            <div class="card-header">
+                                <span class="card-title" id="progress-level-title">Level 1 · Novice Scholar</span>
+                                <span class="chip chip-xp" id="progress-level-chip">0 / 100 XP</span>
+                            </div>
+                            <div class="xp-bar-track">
+                                <div class="xp-bar-fill" id="progress-xp-bar" style="width: 0%;"></div>
+                            </div>
+                            <div class="xp-row">
+                                <span id="progress-level-percent">0% Completed</span>
+                                <span id="progress-next-level">Next level: Level 2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Activity Chart -->
+                    <div class="grid-col">
+                        <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+                            <div class="card-header" style="margin-bottom: 16px; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                        <p class="card-eyebrow" style="margin-bottom: 0;">Weekly Activity</p>
+                                        <span class="chip chip-streak" id="progress-streak" style="padding: 2px 8px; font-size: 0.72rem;">1 Day Streak</span>
+                                    </div>
+                                    <span class="card-title">Study Consistency</span>
+                                    <div id="progress-week-range-label" style="font-size: 0.8rem; color: var(--text-tertiary); font-weight: 500; margin-top: 3px;">This Week</div>
+                                </div>
+
+                                <!-- Calendar & Week Sorting Controls -->
+                                <div class="week-selector-controls" style="display: flex; align-items: center; gap: 6px; position: relative;">
+                                    <button type="button" class="btn-ghost" id="btn-prev-week" title="Previous Week" style="padding: 6px 10px; font-size: 0.85rem; border-radius: 8px; border: 1px solid var(--border); height: 34px; width: 34px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fi fi-rr-angle-left"></i>
+                                    </button>
+                                    <button type="button" class="btn-ghost" id="btn-current-week" title="Select Calendar Date / Week" style="padding: 6px 14px; font-size: 0.8rem; font-weight: 600; border-radius: 8px; border: 1px solid var(--border); display: flex; align-items: center; gap: 6px; background: var(--surface-card); height: 34px; white-space: nowrap;">
+                                        <i class="fi fi-rr-calendar" style="color: var(--primary-600); font-size: 0.9rem;"></i>
+                                        <span id="btn-week-label">This Week</span>
+                                    </button>
+                                    <button type="button" class="btn-ghost" id="btn-next-week" title="Next Week" style="padding: 6px 10px; font-size: 0.85rem; border-radius: 8px; border: 1px solid var(--border); height: 34px; width: 34px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fi fi-rr-angle-right"></i>
+                                    </button>
+                                    <input type="date" id="input-custom-week-date" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none;">
+                                </div>
+                            </div>
+                            <div class="chart-bars" id="weekly-chart-bars" style="margin-top: auto;">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. ROOMS SCREEN -->
+            <section id="screen-rooms" class="screen">
+                <p class="overline">Collaborative Study</p>
+                <div class="screen-header-bar">
+                    <div class="screen-header-title">
+                        <h2>Study Rooms</h2>
+                        <p>Study together live · Public &amp; Private rooms</p>
+                    </div>
+                    <div class="screen-header-actions">
+                        <button class="btn-outline" id="rooms-join-private-btn">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <span>Enter Room ID</span>
+                        </button>
+                        <button class="btn-primary" id="rooms-create-btn">+ Create Room</button>
+                    </div>
+                </div>
+
+                <!-- Active Joined Room Container (Shown when inside a room) -->
+                <div id="rooms-active-container">
+                    <!-- Populated dynamically by JS -->
+                </div>
+
+                <!-- Public Directory List -->
+                <div style="margin-top: 10px;">
+                    <p class="card-eyebrow">Public Study Lounges</p>
+                    <div id="rooms-public-list">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. PROFILE SCREEN -->
+            <section id="screen-profile" class="screen">
+                <p class="overline">Account &amp; Settings</p>
+                <div class="responsive-two-col">
+                    <div class="grid-col">
+                        <div class="card profile-card">
+                            <div class="profile-avatar" id="profile-avatar">M</div>
+                            <h2 id="profile-name">Merrylou</h2>
+                            <p style="margin-top: 4px;" id="profile-level-badge">Level 1 Novice Scholar • Member</p>
+                            <button type="button" class="btn-outline" id="btn-open-edit-profile" style="margin-top: 14px; padding: 7px 16px; font-size: 0.82rem; border-radius: 20px;">
+                                <i class="fi fi-rr-edit" style="margin-right: 6px;"></i> Edit Profile
+                            </button>
+
+                            <div style="display: flex; justify-content: center; gap: 24px; margin-top: 24px;">
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.1rem; font-family: var(--font-mono); color: var(--xp);" id="profile-xp">0 XP</div>
+                                    <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; margin-top: 2px;">TOTAL SCORE</div>
+                                </div>
+                                <div style="border-right: 1px solid var(--border);"></div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.1rem; font-family: var(--font-mono); color: var(--streak);" id="profile-streak">1 Day</div>
+                                    <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; margin-top: 2px;">STREAK</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Auth Status Card -->
+                        <div class="card auth-status-card">
+                            <p class="card-eyebrow">Account &amp; Security</p>
+                            <div id="auth-status-logged-in" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.92rem;" id="auth-user-email">merrylou@bloom.app</div>
+                                    <span class="chip chip-success" id="auth-provider-badge" style="margin-top: 4px; font-size: 0.72rem;">Google Verified</span>
+                                </div>
+                                <button class="btn-outline" id="btn-sign-out" style="padding: 7px 14px; font-size: 0.8rem; color: var(--error);">Sign Out</button>
+                            </div>
+                            <div id="auth-status-logged-out" style="display: none; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.92rem;">Not Signed In</div>
+                                    <p style="font-size: 0.8rem; margin-top: 2px;">Sync your progress across devices</p>
+                                </div>
+                                <button class="btn-primary" id="btn-open-login" style="padding: 8px 16px; font-size: 0.84rem; width: auto;">Log In / Sign Up</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-col">
+                        <!-- Settings -->
+                        <div class="card">
+                            <p class="card-eyebrow">Preferences</p>
+                            <div class="card-header">
+                                <span class="card-title">Settings</span>
+                            </div>
+
+                            <div class="setting-item">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.95rem;">Dark Mode</div>
+                                    <p style="font-size: 0.8rem;">Switch app theme palette</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="dark-mode-toggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="setting-item">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.95rem;">Study Notifications</div>
+                                    <p style="font-size: 0.8rem;">Daily focus reminders</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Scholar Rank Tiers Roadmap Card -->
+                        <div class="card" style="margin-top: 20px;">
+                            <p class="card-eyebrow">Level Progression</p>
+                            <div class="card-header">
+                                <span class="card-title">Scholar Rank Tiers</span>
+                                <span class="chip chip-xp" id="profile-current-tier-chip">Level 1 Novice Scholar</span>
+                            </div>
+                            <div id="profile-tier-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+                                <!-- Dynamically populated by renderProfileScreen() -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Navigation Bar (Adapts to Sidebar on Desktop) -->
+        <nav class="bottom-nav">
+            <div class="nav-brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 100 100" fill="none"><path d="M32,15 L32,85" stroke="var(--primary-600)" stroke-width="9" stroke-linecap="round"/><path d="M32,50 C57,50 70,37 70,55 C70,71 54,75 47,64 C43,57 50,52 57,56" stroke="var(--primary-600)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="57" cy="56" r="5.5" fill="var(--primary-600)"/></svg>
+                </div>
+                <span class="brand-title">bloom</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-item active" data-screen="home">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-item mobile-hidden" data-screen="focus">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>Focus</span>
+                </a>
+                <a href="#" class="nav-item mobile-hidden" data-screen="rooms">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    <span>Rooms</span>
+                </a>
+
+                <!-- Mobile Center Plus / Quick Action Button -->
+                <button type="button" class="nav-item nav-item-plus mobile-only-btn" id="nav-quick-add-btn" aria-label="Explore & Actions">
+                    <div class="plus-btn-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                    <span>Explore</span>
+                </button>
+
+                <a href="#" class="nav-item mobile-hidden" data-screen="flashcards">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                    <span>Cards</span>
+                </a>
+                <a href="#" class="nav-item mobile-hidden" data-screen="progress">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    <span>Progress</span>
+                </a>
+                <a href="#" class="nav-item" data-screen="profile">
+                    <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>Profile</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- MODAL: Join Private Room via Room ID -->
+    <div id="modal-join-private-room" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="card-header">
+                <span class="card-title">Join Private Room</span>
+                <button class="btn-ghost" id="modal-close-join-btn" style="padding: 4px 8px;">✕</button>
+            </div>
+            <p style="font-size: 0.85rem; margin-bottom: 16px;">Enter the 6-character Room ID provided by your host or study group.</p>
+            <form id="form-join-private-room">
+                <div class="form-group">
+                    <label class="form-label">Room ID / Passcode</label>
+                    <input type="text" id="input-private-room-code" class="form-input mono" placeholder="e.g. BLM-8492" uppercase required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-outline" id="btn-cancel-join" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;">Join Room</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Create New Room (Public or Private) -->
+    <div id="modal-create-room" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="card-header">
+                <span class="card-title">Create Study Room</span>
+                <button class="btn-ghost" id="modal-close-create-btn" style="padding: 4px 8px;">✕</button>
+            </div>
+            <form id="form-create-room">
+                <div class="form-group">
+                    <label class="form-label">Room Name</label>
+                    <input type="text" id="input-room-name" class="form-input" placeholder="e.g. Bio 101 Exam Prep" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Study Topic</label>
+                    <input type="text" id="input-room-topic" class="form-input" placeholder="e.g. General Focus, Biology, Math">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Access Type</label>
+                    <select id="select-room-type" class="form-select">
+                        <option value="public">Public — Anyone can join directly</option>
+                        <option value="private">Private — Join via Room ID code</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Session Duration</label>
+                    <select id="select-room-duration" class="form-select">
+                        <option value="25">25 Minutes (Standard Pomodoro)</option>
+                        <option value="50" selected>50 Minutes (Deep Work)</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-outline" id="btn-cancel-create" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;">Create Room</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Mobile Quick Navigation & Actions Sheet -->
+    <div id="modal-nav-quick" class="modal-overlay quick-nav-modal-overlay" style="display: none;">
+        <div class="modal-card quick-nav-sheet">
+            <div class="sheet-handle"></div>
+            <div class="card-header" style="margin-bottom: 16px;">
+                <div>
+                    <span class="card-title" style="font-size: 1.15rem;">Explore &amp; Actions</span>
+                    <p style="font-size: 0.8rem; margin-top: 2px;">Navigate or quickly launch a session</p>
+                </div>
+                <button class="btn-ghost" id="modal-close-quick-btn" style="padding: 4px 8px; font-size: 1rem;">✕</button>
+            </div>
+
+            <!-- Quick Navigation Grid -->
+            <div class="quick-nav-grid">
+                <button type="button" class="quick-nav-tile" data-nav-target="focus">
+                    <div class="tile-icon icon-focus">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
+                    </div>
+                    <div class="tile-info">
+                        <span class="tile-title">Focus Session</span>
+                        <span class="tile-sub">Pomodoro &amp; study clock</span>
+                    </div>
+                </button>
+
+                <button type="button" class="quick-nav-tile" data-nav-target="rooms">
+                    <div class="tile-icon icon-rooms">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <div class="tile-info">
+                        <span class="tile-title">Study Rooms</span>
+                        <span class="tile-sub">Live collaborative study</span>
+                    </div>
+                </button>
+
+                <button type="button" class="quick-nav-tile" data-nav-target="flashcards">
+                    <div class="tile-icon icon-cards">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                    </div>
+                    <div class="tile-info">
+                        <span class="tile-title">Flashcards</span>
+                        <span class="tile-sub">Memory recall decks</span>
+                    </div>
+                </button>
+
+                <button type="button" class="quick-nav-tile" data-nav-target="progress">
+                    <div class="tile-icon icon-progress">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    </div>
+                    <div class="tile-info">
+                        <span class="tile-title">Progress &amp; Stats</span>
+                        <span class="tile-sub">Analytics &amp; milestones</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Quick Creation Actions -->
+            <div class="quick-actions-row" style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); display: flex; gap: 10px;">
+                <button type="button" class="btn-primary" id="quick-action-create-room-btn" style="flex: 1; padding: 10px 14px; font-size: 0.84rem;">+ Create Room</button>
+                <button type="button" class="btn-secondary" id="quick-action-create-deck-btn" style="flex: 1; padding: 10px 14px; font-size: 0.84rem;">+ Create Deck</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Google Accounts Selector (OAuth simulation sheet for testing & dev) -->
+    <div id="modal-google-accounts" class="modal-overlay" style="display: none;">
+        <div class="modal-card google-accounts-card">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span style="font-weight: 700; font-size: 1.05rem;">Sign in with Google</span>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">Choose a Google account to continue to <strong>Bloom</strong>:</p>
+
+            <div class="google-accounts-list">
+                <button type="button" class="google-account-tile" data-google-email="merrylou.dev@gmail.com" data-google-name="Merrylou Rivera" data-google-avatar="M">
+                    <div class="g-avatar" style="background: #4285F4;">M</div>
+                    <div class="g-info">
+                        <div class="g-name">Merrylou Rivera</div>
+                        <div class="g-email">merrylou.dev@gmail.com</div>
+                    </div>
+                </button>
+
+                <button type="button" class="google-account-tile" data-google-email="alex.study@gmail.com" data-google-name="Alex Chen" data-google-avatar="A">
+                    <div class="g-avatar" style="background: #34A853;">A</div>
+                    <div class="g-info">
+                        <div class="g-name">Alex Chen</div>
+                        <div class="g-email">alex.study@gmail.com</div>
+                    </div>
+                </button>
+
+                <button type="button" class="google-account-tile" id="btn-custom-google-account" data-google-email="custom">
+                    <div class="g-avatar" style="background: var(--surface-muted); color: var(--text-primary); border: 1px solid var(--border);">+</div>
+                    <div class="g-info">
+                        <div class="g-name">Use another Google account</div>
+                    </div>
+                </button>
+            </div>
+            <button type="button" class="btn-outline" id="btn-cancel-google-select" style="width: 100%; margin-top: 16px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- MODAL: Welcome User Greeting -->
+    <div id="modal-welcome-user" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 420px; text-align: center; padding: 32px 24px;">
+            <div id="welcome-user-avatar" class="profile-avatar" style="width: 72px; height: 72px; font-size: 1.8rem; margin: 0 auto 16px; border: 3px solid var(--primary-600); box-shadow: var(--shadow-md);">G</div>
+            <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 6px;" id="welcome-user-title">Welcome to Bloom!</h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5;" id="welcome-user-message">
+                Your Google account is connected. Ready to build focus habits, track XP, and study live with peers?
+            </p>
+            <button type="button" class="btn-primary" id="btn-close-welcome-modal" style="width: 100%; padding: 12px; font-size: 0.92rem;">
+                Let's Study! <i class="fi fi-rr-rocket-lunch" style="margin-left: 6px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: Timer Completion Notification -->
+    <div id="modal-timer-complete" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 420px; text-align: center; padding: 32px 24px;">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(82, 183, 136, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--primary-600); font-size: 2rem;">
+                <i class="fi fi-sr-bell" id="timer-complete-modal-icon"></i>
+            </div>
+            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;" id="timer-complete-modal-title">Session Complete!</h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5;" id="timer-complete-modal-msg">
+                Your focus session has finished. Great job staying focused!
+            </p>
+            <button type="button" class="btn-primary" id="btn-timer-complete-modal-action" style="width: 100%; padding: 12px; font-size: 0.92rem;">
+                Continue
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: Level Up Congratulatory Celebration -->
+    <div id="modal-level-up" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 420px; text-align: center; padding: 36px 24px; position: relative;">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(233, 196, 106, 0.18); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #E9C46A; font-size: 2.3rem; border: 2px solid #E9C46A; box-shadow: 0 8px 20px rgba(233, 196, 106, 0.3);">
+                <i class="fi fi-sr-trophy"></i>
+            </div>
+            <span class="chip chip-xp" style="margin-bottom: 8px; font-size: 0.78rem;" id="level-up-modal-chip">LEVEL UP UNLOCKED</span>
+            <h2 style="font-size: 1.55rem; font-weight: 800; margin-bottom: 8px; color: var(--text-primary);" id="level-up-modal-title">LEVEL 2 REACHED!</h2>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;" id="level-up-modal-msg">
+                Congratulations! You earned enough XP to unlock your new title: <strong id="level-up-modal-title-highlight">Dedicated Learner</strong>.
+            </p>
+            <div style="background: var(--surface-card); border-radius: 12px; padding: 14px; margin-bottom: 24px; border: 1px solid var(--border); display: flex; justify-content: space-around; text-align: center;">
+                <div>
+                    <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase;">NEW TIER</div>
+                    <div style="font-weight: 800; font-size: 1rem; color: var(--primary-600); margin-top: 2px;" id="level-up-modal-tier">Rising Scholar</div>
+                </div>
+                <div style="border-right: 1px solid var(--border);"></div>
+                <div>
+                    <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase;">TOTAL XP</div>
+                    <div style="font-weight: 800; font-size: 1rem; color: var(--xp); margin-top: 2px;" id="level-up-modal-total-xp">200 XP</div>
+                </div>
+            </div>
+            <button type="button" class="btn-primary" id="btn-close-level-up-modal" style="width: 100%; padding: 12px; font-size: 0.95rem;">
+                Keep Focusing! <i class="fi fi-rr-rocket-lunch" style="margin-left: 6px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: Daily Study Goal & Scholar Stats -->
+    <div id="modal-study-goal-stats" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 440px; padding: 28px 24px;">
+            <div class="card-header" style="margin-bottom: 16px;">
+                <div>
+                    <span class="card-title" style="font-size: 1.25rem;"><i class="fi fi-rr-chart-histogram" style="margin-right: 6px; color: var(--primary-600);"></i> Daily Goal &amp; Scholar Stats</span>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">Your live study progress &amp; rank achievements</p>
+                </div>
+                <button type="button" class="btn-outline" id="modal-close-goal-stats-btn" style="padding: 4px 10px; font-size: 0.82rem; border-radius: 8px;">✕</button>
+            </div>
+
+            <!-- Daily Goal Progress Bar Track -->
+            <div style="background: var(--surface-card); border-radius: 12px; padding: 14px; border: 1px solid var(--border); margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary);">Goal Progress Track</span>
+                    <span style="font-size: 0.82rem; font-weight: 700; font-family: var(--font-mono); color: var(--primary-600);" id="goal-modal-bar-percent">0%</span>
+                </div>
+                <div class="progress-bar-container" style="height: 10px; border-radius: 6px; background: var(--surface-subtle); overflow: hidden;">
+                    <div class="progress-bar-fill" id="goal-modal-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary-600), #E9C46A); border-radius: 6px; transition: width 0.4s ease;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 0.75rem; color: var(--text-secondary);">
+                    <span id="goal-modal-bar-study-label">0s studied</span>
+                    <span id="goal-modal-bar-target-label">Target: 25m</span>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <div style="background: var(--surface-card); border-radius: 12px; padding: 14px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase;">TODAY'S STUDY</div>
+                    <div style="font-weight: 800; font-size: 1.15rem; color: var(--primary-600); margin-top: 4px;" id="goal-modal-study-time">0s</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;" id="goal-modal-target">Target: 25m</div>
+                </div>
+                <div style="background: var(--surface-card); border-radius: 12px; padding: 14px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase;">GOAL PROGRESS</div>
+                    <div style="font-weight: 800; font-size: 1.15rem; color: var(--success); margin-top: 4px;" id="goal-modal-percent">0%</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;" id="goal-modal-status">In Progress</div>
+                </div>
+                <div style="background: var(--surface-card); border-radius: 12px; padding: 14px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase;">TOTAL SCORE</div>
+                    <div style="font-weight: 800; font-size: 1.15rem; color: var(--xp); margin-top: 4px;" id="goal-modal-xp">0 XP</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;" id="goal-modal-rank">Novice Scholar</div>
+                </div>
+                <div style="background: var(--surface-card); border-radius: 12px; padding: 14px; border: 1px solid var(--border);">
+                    <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase;">ACTIVE STREAK</div>
+                    <div style="font-weight: 800; font-size: 1.15rem; color: var(--streak); margin-top: 4px;" id="goal-modal-streak">1 Day</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">Keep studying daily!</div>
+                </div>
+            </div>
+
+            <!-- Goal Bonus Card -->
+            <div style="background: rgba(82, 183, 136, 0.08); border-radius: 12px; padding: 14px; border: 1px solid var(--primary-600); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fi fi-sr-trophy" style="font-size: 1.3rem; color: #E9C46A;"></i>
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.88rem;" id="goal-modal-bonus-title">Daily Goal +100 XP Bonus</div>
+                        <div style="font-size: 0.78rem; color: var(--text-secondary);" id="goal-modal-bonus-desc">Reach 100% of your daily study target</div>
+                    </div>
+                </div>
+                <span class="chip chip-success" id="goal-modal-bonus-badge" style="font-size: 0.72rem;">In Progress</span>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 8px;">
+                <button type="button" class="btn-outline" id="btn-export-strava-stats" style="flex: 1; padding: 12px; font-size: 0.92rem; border-color: var(--primary-600); color: var(--primary-600); font-weight: 700;">
+                    <i class="fi fi-rr-share" style="margin-right: 6px;"></i> Save Transparent Story Stats
+                </button>
+                <button type="button" class="btn-primary" id="btn-close-goal-stats-modal" style="flex: 1; padding: 12px; font-size: 0.92rem;">
+                    Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIDDEN CONTAINER: Strava-Style Centered Background-Free Transparent Overlay Card -->
+    <div id="strava-export-container" style="position: absolute; left: -9999px; top: -9999px; width: 440px; padding: 40px 32px; background: transparent; text-align: center; font-family: 'Plus Jakarta Sans', sans-serif;">
+        <div style="background: transparent; color: #ffffff; text-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+
+            <!-- 1. Today's Study Time -->
+            <div style="font-size: 0.85rem; font-weight: 800; color: #52B788; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.9);">TODAY'S STUDY</div>
+            <div style="font-size: 3.2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #ffffff; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 4px 20px rgba(0,0,0,0.95);" id="strava-export-time">0s</div>
+
+            <!-- Divider Line -->
+            <div style="width: 60px; height: 2px; background: #52B788; margin-bottom: 20px; box-shadow: 0 0 10px #52B788;"></div>
+
+            <!-- 2. Goal Progress & Percentage -->
+            <div style="font-size: 0.8rem; font-weight: 800; color: rgba(255, 255, 255, 0.85); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">GOAL PROGRESS</div>
+            <div style="font-size: 2.2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #52B788; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 4px 16px rgba(0,0,0,0.9);" id="strava-export-goal-pct">0%</div>
+
+            <!-- Divider Line -->
+            <div style="width: 60px; height: 2px; background: #E9C46A; margin-bottom: 20px; box-shadow: 0 0 10px #E9C46A;"></div>
+
+            <!-- 3. Focus Streak -->
+            <div style="font-size: 0.8rem; font-weight: 800; color: rgba(255, 255, 255, 0.85); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px;">FOCUS STREAK</div>
+            <div style="font-size: 2.2rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #E76F51; line-height: 1.1; margin-bottom: 32px; text-shadow: 0 4px 16px rgba(0,0,0,0.9);" id="strava-export-streak">1 Day</div>
+
+            <!-- 4. Official Bloom Logo & Learner Account (Centered at Bottom) -->
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 24px; width: 100%;">
+                <!-- Logo & Brand Header -->
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="38" height="38" style="filter: drop-shadow(0 2px 10px rgba(82,183,136,0.8));">
+                        <path d="M32,85 L32,15" stroke="#52B788" stroke-width="10" stroke-linecap="round" fill="none" />
+                        <path d="M32,50 C57,50 70,37 70,55 C70,71 54,75 47,64 C43,57 50,52 57,56" stroke="#52B788" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                        <circle cx="57" cy="56" r="6" fill="#52B788" />
+                    </svg>
+                    <span style="font-weight: 800; font-size: 1.8rem; letter-spacing: -0.5px; color: #ffffff; text-shadow: 0 2px 12px rgba(0,0,0,0.95); font-family: 'Plus Jakarta Sans', sans-serif;">bloom</span>
+                </div>
+
+                <!-- Account Name & Rank -->
+                <div style="text-align: center; margin-top: 2px;">
+                    <div style="font-weight: 800; font-size: 1.05rem; color: #52B788; text-shadow: 0 2px 8px rgba(0,0,0,0.9);" id="strava-export-name">Jc Castro</div>
+                    <div style="font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.85); text-shadow: 0 1px 4px rgba(0,0,0,0.8); margin-top: 1px;" id="strava-export-rank">Level 1 · Novice Scholar</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL: Custom Google Account Sign-In -->
+    <div id="modal-custom-google-login" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 420px;">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Google Account Sign-In</span>
+                    <p style="font-size: 0.8rem; margin-top: 2px;">Enter your Google account details to proceed</p>
+                </div>
+                <button type="button" class="btn-ghost" id="modal-close-custom-google-btn" style="padding: 4px 8px;">✕</button>
+            </div>
+            <form id="form-custom-google-login">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="input-custom-google-name" class="form-input" placeholder="e.g. Alex Rivera" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Google Email Address</label>
+                    <input type="email" id="input-custom-google-email" class="form-input" placeholder="student@gmail.com" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-outline" id="btn-cancel-custom-google" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;">Sign In</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Create New Flashcard Deck -->
+    <div id="modal-create-deck" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 460px;">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Create Flashcard Deck</span>
+                    <p style="font-size: 0.8rem; margin-top: 2px;">Organize concepts for active recall</p>
+                </div>
+                <button class="btn-ghost" id="modal-close-create-deck-btn" style="padding: 4px 8px;">✕</button>
+            </div>
+            <form id="form-create-deck">
+                <div class="form-group">
+                    <label class="form-label">Deck Title</label>
+                    <input type="text" id="input-deck-title" class="form-input" placeholder="e.g. Organic Chemistry Reactions" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject / Topic Tag</label>
+                    <input type="text" id="input-deck-subject" class="form-input" placeholder="e.g. Chemistry, Biology, Spanish" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description (Optional)</label>
+                    <textarea id="input-deck-description" class="form-input" rows="2" placeholder="Brief summary of what this deck covers..."></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-outline" id="btn-cancel-create-deck" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;">Create Deck</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Add Card to Deck -->
+    <div id="modal-add-card" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Add New Flashcard</span>
+                    <p style="font-size: 0.8rem; margin-top: 2px;" id="add-card-deck-name">Deck: Cell Biology</p>
+                </div>
+                <button class="btn-ghost" id="modal-close-add-card-btn" style="padding: 4px 8px;">✕</button>
+            </div>
+            <form id="form-add-card">
+                <input type="hidden" id="input-add-card-deck-id">
+                <div class="form-group">
+                    <label class="form-label">Front (Question / Concept Prompt)</label>
+                    <textarea id="input-card-front" class="form-input" rows="3" placeholder="e.g. What is the powerhouse of the cell?" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Back (Answer / Solution)</label>
+                    <textarea id="input-card-back" class="form-input" rows="3" placeholder="e.g. Mitochondria — produces ATP via cellular respiration." required></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-outline" id="btn-cancel-add-card" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 1;">Save Card</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Delete Deck Confirmation -->
+    <div id="modal-delete-deck" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 400px; text-align: center; padding: 28px 24px;">
+            <div style="width: 56px; height: 56px; background: rgba(229, 62, 62, 0.12); color: var(--error, #e53e3e); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 6px;">Delete Flashcard Deck?</h3>
+            <p style="font-size: 0.86rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.4;">
+                Are you sure you want to delete <strong id="delete-deck-title" style="color: var(--text-primary);">this deck</strong>? All cards in this deck will be permanently removed.
+            </p>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-outline" id="btn-cancel-delete-deck" style="flex: 1;">Cancel</button>
+                <button type="button" class="btn-primary" id="btn-confirm-delete-deck" style="flex: 1; background: var(--error, #e53e3e); border-color: var(--error, #e53e3e);">Delete Deck</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit Profile -->
+    <div id="modal-edit-profile" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="card-header">
+                <div>
+                    <span class="card-title">Edit Profile</span>
+                    <p style="font-size: 0.8rem; margin-top: 2px;">Update your display name &amp; profile picture</p>
+                </div>
+                <button type="button" class="btn-ghost" id="modal-close-edit-profile-btn" style="padding: 4px 8px;">✕</button>
+            </div>
+            <form id="form-edit-profile">
+                <div class="form-group" style="text-align: center; margin-bottom: 20px;">
+                    <div id="edit-profile-avatar-preview" class="profile-avatar" style="width: 72px; height: 72px; font-size: 1.8rem; margin: 0 auto 12px; border: 2px solid var(--primary-600);">M</div>
+                    <p style="font-size: 0.78rem; color: var(--text-secondary);">Avatar Preview</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="input-edit-profile-name" class="form-input" placeholder="e.g. Merrylou Rivera" required>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 24px;">
+                    <button type="button" class="btn-outline" id="btn-cancel-edit-profile" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="btn-primary" id="btn-save-edit-profile" style="flex: 1;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Aesthetic 3D Flashcard Study Session -->
+    <div id="modal-study-deck" class="modal-overlay study-modal-overlay" style="display: none;">
+        <div class="modal-card study-modal-card">
+            <!-- Study Header -->
+            <div class="study-header" style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <span class="chip chip-focus" id="study-deck-tag">Biology</span>
+                    <h3 id="study-deck-title" style="margin-top: 6px; font-size: 1.15rem;">Cell Biology Essentials</h3>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="chip chip-streak" id="study-live-timer" style="font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fi fi-rr-stopwatch"></i> <span id="study-live-timer-text">00:00</span>
+                    </span>
+                    <button type="button" class="btn-ghost" id="modal-close-study-btn" style="padding: 6px 12px; font-size: 1.1rem;">✕ Exit</button>
+                </div>
+            </div>
+
+            <!-- Progress Tracker Bar -->
+            <div class="study-progress-wrapper">
+                <div class="study-progress-info">
+                    <span id="study-card-counter">Card 1 of 4</span>
+                    <span id="study-mastery-count">Mastered: 0</span>
+                </div>
+                <div class="progress-bar-container" style="height: 6px;">
+                    <div class="progress-bar-fill" id="study-progress-bar" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            <!-- Active Card & Controls Container -->
+            <div id="study-active-view">
+                <!-- Interactive 3D Flip Card Scene -->
+                <div class="flashcard-3d-scene" id="flashcard-3d-scene">
+                    <div class="flashcard-3d-card" id="flashcard-3d-card">
+                        <!-- Front View -->
+                        <div class="flashcard-face flashcard-front">
+                            <div class="flashcard-face-badge">QUESTION / PROMPT</div>
+                            <div class="flashcard-content" id="flashcard-front-text">
+                                What is the primary function of the Mitochondria?
+                            </div>
+                            <div class="flashcard-hint">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <span>Click card to reveal answer</span>
+                            </div>
+                        </div>
+                        <!-- Back View -->
+                        <div class="flashcard-face flashcard-back">
+                            <div class="flashcard-face-badge badge-back">ANSWER / EXPLANATION</div>
+                            <div class="flashcard-content" id="flashcard-back-text">
+                                Generates ATP (energy) for cellular activity via cellular respiration.
+                            </div>
+                            <div class="flashcard-hint">
+                                <span>Did you recall correctly?</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation & Action Controls -->
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+                    <!-- Top Row: Previous, Flip Card, Next -->
+                    <div style="display: flex; gap: 8px; justify-content: space-between; align-items: center;">
+                        <button type="button" class="btn-outline" id="btn-study-prev" style="padding: 8px 14px; font-size: 0.82rem; flex: 1;">
+                            <i class="fi fi-rr-angle-left" style="margin-right: 4px;"></i> Previous
+                        </button>
+                        <button type="button" class="btn-outline" id="btn-study-flip" style="padding: 8px 16px; font-size: 0.84rem; flex: 1.2; border-color: var(--primary-600); color: var(--primary-600); font-weight: 700;">
+                            <i class="fi fi-rr-refresh" style="margin-right: 4px;"></i> Flip Card
+                        </button>
+                        <button type="button" class="btn-outline" id="btn-study-next" style="padding: 8px 14px; font-size: 0.82rem; flex: 1;">
+                            Next <i class="fi fi-rr-angle-right" style="margin-left: 4px;"></i>
+                        </button>
+                    </div>
+
+                    <!-- Bottom Row: Grade Buttons -->
+                    <div class="grade-btns-group" id="study-grade-btns" style="display: flex; gap: 10px; width: 100%;">
+                        <button type="button" class="btn-grade grade-review" id="btn-study-review" style="flex: 1; padding: 10px;">
+                            <span>Needs Practice</span>
+                        </button>
+                        <button type="button" class="btn-grade grade-mastered" id="btn-study-mastered" style="flex: 1; padding: 10px;">
+                            <span>Mastered</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session Summary Screen (Hidden by default) -->
+            <div class="study-summary-view" id="study-summary-view" style="display: none;">
+                <div class="summary-icon"><i class="fi fi-sr-trophy" style="font-size: 2.2rem; color: #E9C46A;"></i></div>
+                <h2 style="font-size: 1.35rem; margin-bottom: 4px;">Deck Review Completed!</h2>
+                <p style="font-size: 0.86rem; color: var(--text-secondary);">Great job practicing active recall!</p>
+                <div class="summary-stats-box">
+                    <div class="summary-stat">
+                        <span class="stat-num" id="summary-total-cards">4</span>
+                        <span class="stat-lbl">TOTAL CARDS</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-num" style="color: var(--primary-600);" id="summary-mastered-cards">3</span>
+                        <span class="stat-lbl">MASTERED</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="stat-num" style="color: var(--xp);" id="summary-xp-earned">+20 XP</span>
+                        <span class="stat-lbl">EARNED XP</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-primary" id="btn-study-finish" style="width: 100%; padding: 12px; margin-top: 16px;">Return to Decks</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Import Shared Deck by ID -->
+    <div id="modal-import-deck" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="card-header">
+                <div>
+                    <span class="card-title"><i class="fi fi-rr-download" style="margin-right: 6px; color: var(--primary-600);"></i> Import Private Deck</span>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">Enter a Deck ID Code (e.g. DEC-384912) to import &amp; study</p>
+                </div>
+                <button type="button" class="btn-ghost" id="modal-close-import-deck-btn" style="padding: 4px 8px;">✕</button>
+            </div>
+            <form id="form-import-deck">
+                <div class="form-group">
+                    <label class="form-label">Deck ID Code</label>
+                    <input type="text" id="input-import-deck-code" class="form-input" placeholder="e.g. DEC-384912" required style="font-family: var(--font-mono); text-transform: uppercase; font-weight: 700; font-size: 1.1rem; letter-spacing: 1px; text-align: center;">
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-outline" id="btn-cancel-import-deck" style="flex: 1; padding: 12px; font-size: 0.9rem;">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 1; padding: 12px; font-size: 0.9rem;">Import &amp; Study</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Share Private Deck ID -->
+    <div id="modal-share-deck" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 440px; text-align: center; padding: 28px 24px;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(82, 183, 136, 0.15); color: var(--primary-600); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 1.6rem;">
+                <i class="fi fi-rr-lock"></i>
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 4px;" id="share-deck-title">Share Private Deck</h3>
+            <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 20px;" id="share-deck-sub">Share this unique Deck ID with classmates or study partners so they can import it!</p>
+
+            <!-- Deck Code Display Box -->
+            <div style="background: var(--surface-card); border-radius: 12px; padding: 18px; border: 2px dashed var(--primary-600); margin-bottom: 20px;">
+                <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">YOUR DECK ID CODE</div>
+                <div style="font-family: var(--font-mono); font-size: 1.6rem; font-weight: 800; color: var(--primary-600); letter-spacing: 2px;" id="share-deck-code-val">DEC-000000</div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-primary" id="btn-copy-share-deck-code" style="flex: 1; padding: 12px; font-size: 0.9rem;">
+                    <i class="fi fi-rr-copy" style="margin-right: 6px;"></i> Copy Deck ID
+                </button>
+                <button type="button" class="btn-outline" id="btn-close-share-deck-modal" style="padding: 12px 18px; font-size: 0.9rem;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="js/state.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/app.js"></script>
+    <!-- MODAL: Custom Bloom Dark-Themed Calendar Week Picker -->
+    <div id="modal-bloom-calendar" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 360px; padding: 20px;">
+            <div class="card-header" style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fi fi-rr-calendar" style="color: var(--primary-600); font-size: 1.15rem;"></i>
+                    <span class="card-title" style="font-size: 1.05rem;" id="bloom-cal-month-title">August 2026</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" class="btn-ghost" id="bloom-cal-prev-month" title="Previous Month" style="padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid var(--border);">
+                        <i class="fi fi-rr-angle-left"></i>
+                    </button>
+                    <button type="button" class="btn-ghost" id="bloom-cal-next-month" title="Next Month" style="padding: 4px 8px; font-size: 0.85rem; border-radius: 6px; border: 1px solid var(--border);">
+                        <i class="fi fi-rr-angle-right"></i>
+                    </button>
+                    <button type="button" class="btn-ghost" id="modal-close-bloom-cal-btn" style="padding: 4px 8px; font-size: 0.9rem; margin-left: 4px;">✕</button>
+                </div>
+            </div>
+
+            <!-- Calendar Days Header -->
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 8px;">
+                <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+            </div>
+
+            <!-- Calendar Days Grid -->
+            <div id="bloom-cal-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center;">
+                <!-- Populated dynamically by JS -->
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 16px;">
+                <button type="button" class="btn-outline" id="btn-bloom-cal-today" style="flex: 1; padding: 9px; font-size: 0.82rem;">This Week</button>
+                <button type="button" class="btn-primary" id="btn-bloom-cal-close" style="flex: 1; padding: 9px; font-size: 0.82rem;">Done</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Glow filter -->
+    <filter id="bloomGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <radialGradient id="bgAmbient" cx="57%" cy="56%" r="50%">
+      <stop offset="0%" stop-color="#87AD6C" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#557843" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <style>
+    /* Ambient backdrop pulse */
+    @keyframes bgPulse {
+      0%, 100% { transform: scale(0.85); opacity: 0.3; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+    }
+
+    /* Draw stem upwards from bottom (85) to top (15) like a growing plant */
+    @keyframes sproutUpwards {
+      0% {
+        stroke-dashoffset: 70;
+      }
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    /* Draw frond curl as sprout unfurls */
+    @keyframes unfurlCurl {
+      0% {
+        stroke-dashoffset: 140;
+      }
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    /* Bud pop and gentle breathe */
+    @keyframes popBud {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      65% {
+        transform: scale(1.4);
+        opacity: 1;
+      }
+      80% {
+        transform: scale(0.9);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes budBreathe {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(108,148,87,0.5)); }
+      50% { transform: scale(1.25); filter: drop-shadow(0 0 10px rgba(108,148,87,0.9)); }
+    }
+
+    /* Ripple expansion from bud */
+    @keyframes budRipple {
+      0% { transform: scale(0.2); opacity: 0.8; }
+      100% { transform: scale(3.5); opacity: 0; }
+    }
+
+    .ambient-glow {
+      transform-origin: 57px 56px;
+      animation: bgPulse 3s ease-in-out infinite;
+    }
+
+    .sprout-stem {
+      stroke-dasharray: 70;
+      stroke-dashoffset: 70;
+      animation: sproutUpwards 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.1s forwards;
+    }
+
+    .sprout-curl {
+      stroke-dasharray: 140;
+      stroke-dashoffset: 140;
+      animation: unfurlCurl 1.0s cubic-bezier(0.25, 1, 0.5, 1) 0.5s forwards;
+    }
+
+    .sprout-bud-group {
+      transform-origin: 57px 56px;
+      animation: popBud 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.35s forwards;
+    }
+
+    .sprout-bud {
+      transform-origin: 57px 56px;
+      animation: budBreathe 2.5s ease-in-out 1.85s infinite;
+    }
+
+    .ripple-ring {
+      transform-origin: 57px 56px;
+      animation: budRipple 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) 1.45s infinite;
+    }
+  </style>
+
+  <!-- Ambient Glow -->
+  <circle cx="57" cy="56" r="35" fill="url(#bgAmbient)" class="ambient-glow" />
+
+  <!-- Expanding Ripple from Bud -->
+  <circle cx="57" cy="56" r="10" fill="none" stroke="#87AD6C" stroke-width="1.5" class="ripple-ring" opacity="0" />
+
+  <!-- The Sprout Mark Group -->
+  <g filter="url(#bloomGlow)">
+    <!-- Vertical Stem (Bottom 85 -> Top 15) -->
+    <path class="sprout-stem" d="M32,85 L32,15" stroke="#557843" stroke-width="9" stroke-linecap="round" />
+
+    <!-- Unfurling Fern Spiral / Focus Ring -->
+    <path class="sprout-curl" d="M32,50 C57,50 70,37 70,55 C70,71 54,75 47,64 C43,57 50,52 57,56" stroke="#557843" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+
+    <!-- Solid Bud -->
+    <g class="sprout-bud-group" style="opacity: 0;">
+      <circle class="sprout-bud" cx="57" cy="56" r="5.5" fill="#557843" />
+    </g>
+  </g>
+</svg>

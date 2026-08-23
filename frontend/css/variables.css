@@ -1,0 +1,143 @@
+:root, [data-theme="light"] {
+    /* Brand Palette - Light Theme */
+    --bg: #FAF7F0;
+    --bg-alt: #F2EEE2;
+    --surface: #FFFFFF;
+    --surface-muted: #F3F0E6;
+    --border: rgba(38, 43, 34, 0.09);
+    --border-strong: rgba(38, 43, 34, 0.16);
+    --text-primary: #262B22;
+    --text-secondary: #6C7161;
+    --text-tertiary: #9A9E8C;
+    --overlay-tint: rgba(38, 43, 34, 0.03);
+
+    /* Primary Sage Scale */
+    --primary-50: #F2F6EC;
+    --primary-100: #E2EBD8;
+    --primary-200: #C8DAB6;
+    --primary-300: #A7C48F;
+    --primary-400: #87AD6C;
+    --primary-500: #6C9457;
+    --primary-600: #557843;
+    --primary-700: #425E35;
+    --primary-800: #334A2A;
+    --primary-contrast: #FFFFFF;
+
+    /* Semantic Accents */
+    --xp: #B98A2E;
+    --xp-tint: #F6EBD3;
+    --streak: #D9713C;
+    --streak-tint: #F7E3D4;
+    --success: #4C7F52;
+    --success-tint: #E1EEE0;
+    --warning: #B8862B;
+    --warning-tint: #F5E9D2;
+    --focus: #3C7D77;
+    --focus-tint: #DCEBE9;
+    --error: #B3503F;
+    --error-tint: #F3DED9;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(38, 43, 34, 0.05);
+    --shadow-md: 0 6px 20px rgba(38, 43, 34, 0.07);
+    --shadow-lg: 0 16px 40px rgba(38, 43, 34, 0.10);
+
+    /* Radii Scale */
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-full: 999px;
+
+    /* Spacing Scale */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+
+    /* Typography */
+    --font-display: 'Plus Jakarta Sans', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Legacy / Compatibility Aliases */
+    --background: var(--bg);
+    --surface-secondary: var(--surface-muted);
+    --text: var(--text-primary);
+    --muted: var(--text-secondary);
+    --primary: var(--primary-600);
+    --primary-dark: var(--primary-700);
+    --primary-light: var(--primary-100);
+    --accent: var(--streak);
+    --accent-light: var(--streak-tint);
+    --danger: var(--error);
+    --radius: var(--radius-lg);
+    --shadow: var(--shadow-sm);
+    --transition: all 0.2s ease;
+    --font-family: var(--font-body);
+    --bottom-nav-height: 72px;
+}
+
+[data-theme="dark"] {
+    /* Brand Palette - Dark Theme */
+    --bg: #14170F;
+    --bg-alt: #191D13;
+    --surface: #1D2117;
+    --surface-muted: #23281B;
+    --border: rgba(243, 241, 231, 0.08);
+    --border-strong: rgba(243, 241, 231, 0.16);
+    --text-primary: #F3F1E5;
+    --text-secondary: #ACB19E;
+    --text-tertiary: #767B69;
+    --overlay-tint: rgba(255, 255, 255, 0.03);
+
+    /* Primary Sage Scale (Dark) */
+    --primary-50: #202519;
+    --primary-100: #293321;
+    --primary-200: #38492C;
+    --primary-300: #4C6339;
+    --primary-400: #6D8C4E;
+    --primary-500: #8FBB74;
+    --primary-600: #A6CB8E;
+    --primary-700: #C1DBAE;
+    --primary-800: #DDEBD1;
+    --primary-contrast: #14170F;
+
+    /* Semantic Accents (Dark) */
+    --xp: #E4BD6C;
+    --xp-tint: #332B18;
+    --streak: #EC9A66;
+    --streak-tint: #382418;
+    --success: #8FC391;
+    --success-tint: #1E2C1E;
+    --warning: #E7C36B;
+    --warning-tint: #332B18;
+    --focus: #7FC0B8;
+    --focus-tint: #1B2C2A;
+    --error: #DD8977;
+    --error-tint: #332019;
+
+    /* Shadows (Dark) */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.4);
+
+    /* Legacy / Compatibility Aliases */
+    --background: var(--bg);
+    --surface-secondary: var(--surface-muted);
+    --text: var(--text-primary);
+    --muted: var(--text-secondary);
+    --primary: var(--primary-500);
+    --primary-dark: var(--primary-600);
+    --primary-light: var(--primary-100);
+    --accent: var(--streak);
+    --accent-light: var(--streak-tint);
+    --danger: var(--error);
+    --shadow: var(--shadow-sm);
+}
