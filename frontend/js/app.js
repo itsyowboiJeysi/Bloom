@@ -2818,15 +2818,17 @@ function toggleAuthPageMode(signUp = false) {
     }
 }
 
+const RENDER_API_URL = 'https://bloom-j4ws.onrender.com';
+
 function getApiUrl(endpoint) {
-    const hostname = window.location.hostname || 'localhost';
-    if (window.location.protocol === 'file:') {
-        return `http://localhost:5000${endpoint}`;
-    }
-    if (window.location.port && window.location.port !== '5000') {
+    const hostname = window.location.hostname || '';
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        if (window.location.port === '5000') {
+            return endpoint;
+        }
         return `http://${hostname}:5000${endpoint}`;
     }
-    return endpoint;
+    return `${RENDER_API_URL}${endpoint}`;
 }
 
 async function loginWithGoogleUser(userData) {
