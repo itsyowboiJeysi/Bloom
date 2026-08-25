@@ -1487,10 +1487,21 @@ async function fetchDecksFromDatabase() {
             const data = await response.json();
             if (data.decks && Array.isArray(data.decks)) {
                 if (activeStudyState && activeStudyState.deck) return;
-                AppState.flashcards.decks = data.decks.map(d => ({
-                    ...d,
-                    creatorEmail: userEmail
-                }));
+
+                const dbDecksMap = new Map();
+                data.decks.forEach(d => {
+                    const key = String(d.dbId || d.id);
+                    dbDecksMap.set(key, { ...d, creatorEmail: userEmail });
+                });
+
+                (AppState.flashcards.decks || []).forEach(localDeck => {
+                    const key = String(localDeck.dbId || localDeck.id);
+                    if (!dbDecksMap.has(key)) {
+                        dbDecksMap.set(key, localDeck);
+                    }
+                });
+
+                AppState.flashcards.decks = Array.from(dbDecksMap.values());
                 saveFlashcardDecksToStorage();
                 renderFlashcardsScreenUI();
             }
@@ -1513,7 +1524,7 @@ function renderFlashcardsScreenUI() {
     const currentUserEmail = AppState.user && AppState.user.email ? AppState.user.email : null;
     const userDecks = (AppState.flashcards.decks || []).filter(deck => {
         if (!currentUserEmail) return true;
-        return !deck.creatorEmail || deck.creatorEmail === currentUserEmail;
+        return !deck.creatorEmail || deck.creatorEmail === currentUserEmail || deck.isImported;
     });
 
     if (userDecks.length === 0) {
@@ -1729,15 +1740,20 @@ async function handleImportDeckSubmit(e) {
     if (!code) return;
 
     try {
-        const response = await fetch(getApiUrl(`/api/decks/import/${encodeURIComponent(code)}`));
+        const userEmail = AppState.user && AppState.user.email ? AppState.user.email : '';
+        const response = await fetch(getApiUrl(`/api/decks/import/${encodeURIComponent(code)}?email=${encodeURIComponent(userEmail)}`));
         if (response.ok) {
             const data = await response.json();
             if (data.deck) {
-                const imported = data.deck;
+                const imported = {
+                    ...data.deck,
+                    creatorEmail: userEmail,
+                    isImported: true
+                };
 
                 // Check if already in list
                 const existing = AppState.flashcards.decks.find(d =>
-                    d.shareCode === imported.shareCode || d.id === imported.id || d.title === imported.title
+                    (d.shareCode && d.shareCode === imported.shareCode) || d.id === imported.id || (d.dbId && imported.dbId && d.dbId === imported.dbId)
                 );
 
                 if (existing) {
@@ -1745,7 +1761,7 @@ async function handleImportDeckSubmit(e) {
                 } else {
                     AppState.flashcards.decks.unshift(imported);
                     saveFlashcardDecksToStorage();
-                    renderFlashcardsScreen();
+                    renderFlashcardsScreenUI();
                     showXpToastNotification(`<i class="fi fi-rr-check" style="margin-right: 6px;"></i> Successfully imported "${imported.title}" (${imported.cards ? imported.cards.length : 0} cards)!`);
                 }
 

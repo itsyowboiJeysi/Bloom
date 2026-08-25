@@ -761,6 +761,7 @@ app.post('/api/decks/create', async (req, res) => {
 app.get('/api/decks/import/:code', async (req, res) => {
     try {
         const { code } = req.params;
+        const { email } = req.query;
         const cleanCode = code ? code.trim().toUpperCase() : '';
 
         if (!cleanCode) {
@@ -782,9 +783,38 @@ app.get('/api/decks/import/:code', async (req, res) => {
 
             if (deckRow) {
                 const [cRows] = await dbPool.query('SELECT * FROM flashcards WHERE deck_id = ? ORDER BY id ASC', [deckRow.id]);
+                
+                let importedDbDeckId = deckRow.id;
+
+                // Save a copy of the deck in MySQL for the importing user
+                if (email) {
+                    try {
+                        const userEmail = email.toLowerCase().trim();
+                        const userId = await getOrCreateUserId(userEmail);
+                        if (userId && userId !== deckRow.user_id) {
+                            const newShareCode = deckRow.share_code || `DEC-${deckRow.id}`;
+                            const [newDRes] = await dbPool.query(
+                                'INSERT INTO flashcard_decks (user_id, title, category, description, share_code) VALUES (?, ?, ?, ?, ?)',
+                                [userId, deckRow.title, deckRow.category || 'General', deckRow.description || '', newShareCode]
+                            );
+                            importedDbDeckId = newDRes.insertId;
+
+                            for (const c of cRows) {
+                                await dbPool.query(
+                                    'INSERT INTO flashcards (deck_id, front, back, is_mastered) VALUES (?, ?, ?, ?)',
+                                    [importedDbDeckId, c.front, c.back, c.is_mastered ? 1 : 0]
+                                );
+                            }
+                            console.log(`💾 Imported deck '${deckRow.title}' saved for user ${userEmail} in MySQL (New Deck ID: ${importedDbDeckId})`);
+                        }
+                    } catch (importErr) {
+                        console.error('MySQL import deck copy error:', importErr.message);
+                    }
+                }
+
                 const importedDeck = {
-                    id: `deck_${deckRow.id}`,
-                    dbId: deckRow.id,
+                    id: `deck_${importedDbDeckId}`,
+                    dbId: importedDbDeckId,
                     shareCode: deckRow.share_code || `DEC-${deckRow.id}`,
                     title: deckRow.title,
                     subject: deckRow.category || 'General',
