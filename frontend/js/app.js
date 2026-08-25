@@ -891,10 +891,9 @@ async function fetchRoomsFromDatabase() {
 
                     if (AppState.rooms.activeRoom && (AppState.rooms.activeRoom.id === r.id || AppState.rooms.activeRoom.code === r.code)) {
                         AppState.rooms.activeRoom.timerMinutes = roomObj.timerMinutes;
-                        const diff = Math.abs((AppState.rooms.activeRoom.secondsRemaining || 0) - roomObj.secondsRemaining);
-                        if (diff > 3 || AppState.rooms.activeRoom.secondsRemaining === undefined) {
-                            AppState.rooms.activeRoom.secondsRemaining = roomObj.secondsRemaining;
-                        }
+                        AppState.rooms.activeRoom.secondsRemaining = roomObj.secondsRemaining;
+                        const timerEl = document.getElementById('active-room-timer');
+                        if (timerEl) timerEl.textContent = formatTime(roomObj.secondsRemaining);
                     }
 
                     if (r.type === 'private') {
@@ -913,9 +912,7 @@ async function fetchRoomsFromDatabase() {
     }
 
     restoreActiveRoomSession();
-    if (!AppState.rooms.activeRoom) {
-        renderActiveRoomStage();
-    }
+    renderActiveRoomStage();
     renderPublicRoomsList();
 }
 
@@ -923,7 +920,7 @@ function restoreActiveRoomSession() {
     if (AppState.rooms.activeRoom) return;
 
     try {
-        const savedItem = localStorage.getItem('bloom_active_room');
+        const savedItem = localStorage.getItem('bloom_active_room') || localStorage.getItem('bloom_last_joined_room');
         if (savedItem) {
             const savedRoom = JSON.parse(savedItem);
             let room = AppState.rooms.publicRooms.find(r => r.id === savedRoom.id || r.code === savedRoom.code) ||
@@ -962,9 +959,42 @@ function restoreActiveRoomSession() {
             }
 
             AppState.rooms.activeRoom = room;
+
+            // Sync rejoin with backend server
+            if (user && room && room.code) {
+                fetch(getApiUrl('/api/rooms/join'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        roomCode: room.code,
+                        userEmail: user.email,
+                        userName: user.name,
+                        userAvatar: user.avatar
+                    })
+                }).catch(() => {});
+            }
         }
     } catch (e) {
         console.warn("Could not restore active room session:", e.message);
+    }
+}
+
+async function rejoinLastRoom() {
+    try {
+        const lastStr = localStorage.getItem('bloom_last_joined_room') || localStorage.getItem('bloom_active_room');
+        if (!lastStr) {
+            showXpToastNotification("No recent study room found to rejoin.");
+            return;
+        }
+        const lastRoom = JSON.parse(lastStr);
+        let targetRoom = AppState.rooms.publicRooms.find(r => r.code === lastRoom.code) ||
+                         AppState.rooms.privateRooms.find(r => r.code === lastRoom.code) ||
+                         lastRoom;
+
+        showXpToastNotification(`<i class="fi fi-rr-refresh" style="margin-right: 6px;"></i> Rejoining "${targetRoom.name}"...`);
+        await joinRoom(targetRoom);
+    } catch (e) {
+        showXpToastNotification("Could not rejoin room. Please verify room code.");
     }
 }
 
@@ -981,6 +1011,36 @@ function renderActiveRoomStage() {
     const { activeRoom } = AppState.rooms;
 
     if (!activeRoom) {
+        let lastRoomInfo = null;
+        try {
+            const lastStr = localStorage.getItem('bloom_last_joined_room') || localStorage.getItem('bloom_active_room');
+            if (lastStr) lastRoomInfo = JSON.parse(lastStr);
+        } catch (e) {}
+
+        if (lastRoomInfo && lastRoomInfo.code) {
+            activeContainer.innerHTML = `
+                <div class="card" style="margin-bottom: 20px; background: rgba(82, 183, 136, 0.08); border: 1.5px dashed var(--primary-600); border-radius: 16px; padding: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+                        <div>
+                            <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 6px;">
+                                <span class="chip chip-success" style="font-size: 0.72rem; font-weight: 700;"><i class="fi fi-rr-refresh" style="margin-right: 4px;"></i> Refresh / Disconnected?</span>
+                                <span class="chip" style="font-family: var(--font-mono); font-size: 0.72rem; background: var(--surface-card); color: var(--primary-600); border: 1px solid var(--primary-600);">ID: ${escapeHtml(lastRoomInfo.code)}</span>
+                            </div>
+                            <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 2px;">${escapeHtml(lastRoomInfo.name)}</h4>
+                            <p style="font-size: 0.83rem; color: var(--text-secondary); margin: 0;">${escapeHtml(lastRoomInfo.topic || 'General Deep Work Session')}</p>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button class="btn-primary" onclick="rejoinLastRoom()" style="padding: 10px 22px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; width: auto;">
+                                <i class="fi fi-rr-undo-alt" style="margin-right: 6px;"></i> Rejoin Room
+                            </button>
+                            <button class="btn-outline" onclick="openJoinPrivateModal()" style="padding: 10px 14px; font-size: 0.82rem; border-radius: 12px; width: auto;">Join ID</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
         activeContainer.innerHTML = `
             <div class="card" style="margin-bottom: 20px; background: var(--surface-muted); border-style: dashed;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -1280,7 +1340,7 @@ async function joinRoom(room) {
     AppState.rooms.activeRoom = room;
 
     try {
-        localStorage.setItem('bloom_active_room', JSON.stringify({
+        const roomStateData = JSON.stringify({
             id: room.id,
             code: room.code,
             name: room.name,
@@ -1289,7 +1349,9 @@ async function joinRoom(room) {
             timerMinutes: room.timerMinutes,
             secondsRemaining: room.secondsRemaining,
             savedAt: Date.now()
-        }));
+        });
+        localStorage.setItem('bloom_active_room', roomStateData);
+        localStorage.setItem('bloom_last_joined_room', roomStateData);
     } catch (e) {}
 
     renderRoomsScreen();
