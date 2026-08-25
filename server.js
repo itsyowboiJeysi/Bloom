@@ -649,6 +649,28 @@ async function cleanupEmptyRooms() {
 
 setInterval(cleanupEmptyRooms, 10000);
 
+// Helper to get or auto-create user in MySQL
+async function getOrCreateUserId(email, displayName = 'Learner') {
+    if (!email || !isDbConnected || !dbPool) return null;
+    const cleanEmail = email.toLowerCase().trim();
+    try {
+        const [uRows] = await dbPool.query('SELECT id FROM users WHERE email = ?', [cleanEmail]);
+        if (uRows.length > 0) {
+            return uRows[0].id;
+        }
+        const userName = displayName || cleanEmail.split('@')[0] || 'Learner';
+        const [result] = await dbPool.query(
+            'INSERT INTO users (username, email, password_hash, avatar_url, xp, current_streak) VALUES (?, ?, ?, ?, ?, ?)',
+            [userName, cleanEmail, 'guest_auto_created', userName.charAt(0).toUpperCase(), 0, 1]
+        );
+        console.log(`💾 Auto-created user '${cleanEmail}' in MySQL (ID: ${result.insertId})`);
+        return result.insertId;
+    } catch (err) {
+        console.error("Error in getOrCreateUserId:", err.message);
+        return null;
+    }
+}
+
 // 8. Flashcard Decks & Cards API (MySQL Persistence)
 app.get('/api/decks', async (req, res) => {
     try {
@@ -657,9 +679,8 @@ app.get('/api/decks', async (req, res) => {
 
         if (isDbConnected && dbPool && email) {
             try {
-                const [uRows] = await dbPool.query('SELECT id FROM users WHERE email = ?', [email.toLowerCase().trim()]);
-                if (uRows.length > 0) {
-                    const userId = uRows[0].id;
+                const userId = await getOrCreateUserId(email);
+                if (userId) {
                     const [dRows] = await dbPool.query('SELECT * FROM flashcard_decks WHERE user_id = ? ORDER BY id DESC', [userId]);
 
                     for (const d of dRows) {
@@ -703,11 +724,11 @@ app.post('/api/decks/create', async (req, res) => {
         let dbDeckId = null;
         const generatedShareCode = `DEC-${Math.floor(100000 + Math.random() * 900000)}`;
 
-        if (isDbConnected && dbPool && email) {
+        if (isDbConnected && dbPool) {
             try {
-                const [uRows] = await dbPool.query('SELECT id FROM users WHERE email = ?', [email.toLowerCase().trim()]);
-                if (uRows.length > 0) {
-                    const userId = uRows[0].id;
+                const userEmail = email || 'guest@bloom.app';
+                const userId = await getOrCreateUserId(userEmail);
+                if (userId) {
                     const [result] = await dbPool.query(
                         'INSERT INTO flashcard_decks (user_id, title, category, description, share_code) VALUES (?, ?, ?, ?, ?)',
                         [userId, title, subject || 'General', description || '', generatedShareCode]
@@ -730,7 +751,7 @@ app.post('/api/decks/create', async (req, res) => {
             cards: []
         };
 
-        res.json({ message: 'Private Deck created! 🎴', deck: newDeck });
+        res.json({ message: 'Deck created successfully! 🎉', deck: newDeck });
     } catch (err) {
         res.status(500).json({ error: 'Failed to create deck: ' + err.message });
     }
@@ -739,28 +760,35 @@ app.post('/api/decks/create', async (req, res) => {
 // Import Shared Deck via Deck ID Code API
 app.get('/api/decks/import/:code', async (req, res) => {
     try {
-        const rawCode = req.params.code ? req.params.code.trim().toUpperCase() : '';
-        if (!rawCode) {
+        const { code } = req.params;
+        const cleanCode = code ? code.trim().toUpperCase() : '';
+
+        if (!cleanCode) {
             return res.status(400).json({ error: 'Deck ID Code is required.' });
         }
 
         if (isDbConnected && dbPool) {
-            const numericId = parseInt(rawCode.replace('DEC-', ''), 10);
-            const [dRows] = await dbPool.query(
-                'SELECT * FROM flashcard_decks WHERE share_code = ? OR id = ?',
-                [rawCode, isNaN(numericId) ? -1 : numericId]
-            );
+            let deckRow = null;
+            const [rowsByCode] = await dbPool.query('SELECT * FROM flashcard_decks WHERE share_code = ?', [cleanCode]);
+            if (rowsByCode.length > 0) {
+                deckRow = rowsByCode[0];
+            } else {
+                const numericId = parseInt(cleanCode.replace('DEC-', '').replace('DECK_', ''), 10);
+                if (!isNaN(numericId)) {
+                    const [rowsById] = await dbPool.query('SELECT * FROM flashcard_decks WHERE id = ?', [numericId]);
+                    if (rowsById.length > 0) deckRow = rowsById[0];
+                }
+            }
 
-            if (dRows.length > 0) {
-                const d = dRows[0];
-                const [cRows] = await dbPool.query('SELECT * FROM flashcards WHERE deck_id = ? ORDER BY id ASC', [d.id]);
+            if (deckRow) {
+                const [cRows] = await dbPool.query('SELECT * FROM flashcards WHERE deck_id = ? ORDER BY id ASC', [deckRow.id]);
                 const importedDeck = {
-                    id: `deck_imported_${d.id}_${Date.now()}`,
-                    dbId: d.id,
-                    shareCode: d.share_code || `DEC-${d.id}`,
-                    title: d.title,
-                    subject: d.category || 'General',
-                    description: d.description || '',
+                    id: `deck_${deckRow.id}`,
+                    dbId: deckRow.id,
+                    shareCode: deckRow.share_code || `DEC-${deckRow.id}`,
+                    title: deckRow.title,
+                    subject: deckRow.category || 'General',
+                    description: deckRow.description || '',
                     cards: cRows.map(c => ({
                         id: `card_${c.id}`,
                         dbId: c.id,
@@ -809,11 +837,11 @@ app.post('/api/decks/add-card', async (req, res) => {
                     }
                 }
 
-                // If deck wasn't found in DB yet, create the deck first
-                if (!dbCardId && email && deckTitle) {
-                    const [uRows] = await dbPool.query('SELECT id FROM users WHERE email = ?', [email.toLowerCase().trim()]);
-                    if (uRows.length > 0) {
-                        const userId = uRows[0].id;
+                // If deck wasn't found in DB yet, create user & deck first
+                if (!dbCardId && deckTitle) {
+                    const userEmail = email || 'guest@bloom.app';
+                    const userId = await getOrCreateUserId(userEmail);
+                    if (userId) {
                         const shareCode = `DEC-${Math.floor(100000 + Math.random() * 900000)}`;
                         const [dRes] = await dbPool.query(
                             'INSERT INTO flashcard_decks (user_id, title, category, description, share_code) VALUES (?, ?, ?, ?, ?)',
@@ -825,7 +853,7 @@ app.post('/api/decks/add-card', async (req, res) => {
                             [newDbDeckId, front, back]
                         );
                         dbCardId = cRes.insertId;
-                        console.log(`💾 Created deck '${deckTitle}' (ID: ${newDbDeckId}) and added card (ID: ${dbCardId}) in MySQL`);
+                        console.log(`💾 Auto-created deck '${deckTitle}' (ID: ${newDbDeckId}) and added card (ID: ${dbCardId}) in MySQL`);
                     }
                 }
             } catch (dbErr) {

@@ -1477,8 +1477,7 @@ function saveFlashcardDecksToStorage() {
 }
 
 async function fetchDecksFromDatabase() {
-    const userEmail = AppState.user && AppState.user.email ? AppState.user.email : null;
-    if (!userEmail) return;
+    const userEmail = AppState.user && AppState.user.email ? AppState.user.email : 'guest@bloom.app';
 
     if (activeStudyState && activeStudyState.deck) return;
 
@@ -1493,6 +1492,7 @@ async function fetchDecksFromDatabase() {
                     creatorEmail: userEmail
                 }));
                 saveFlashcardDecksToStorage();
+                renderFlashcardsScreenUI();
             }
         }
     } catch (e) {
@@ -1502,10 +1502,13 @@ async function fetchDecksFromDatabase() {
 
 /* Screen 4: Flashcards Screen & Modal Controllers */
 function renderFlashcardsScreen() {
+    fetchDecksFromDatabase();
+    renderFlashcardsScreenUI();
+}
+
+function renderFlashcardsScreenUI() {
     const container = document.getElementById('flashcards-deck-list');
     if (!container) return;
-
-    fetchDecksFromDatabase();
 
     const currentUserEmail = AppState.user && AppState.user.email ? AppState.user.email : null;
     const userDecks = (AppState.flashcards.decks || []).filter(deck => {
@@ -1531,7 +1534,7 @@ function renderFlashcardsScreen() {
             const masteredCount = deck.cards ? deck.cards.filter(c => c.mastered).length : 0;
             const masteredPercent = cardCount > 0 ? Math.round((masteredCount / cardCount) * 100) : 0;
             const subjectTag = deck.subject || 'General';
-            const shareCode = deck.shareCode || `DEC-${(deck.dbId || deck.id).toString().replace('deck_', '')}`;
+            const shareCode = deck.shareCode || `DEC-${(deck.dbId || deck.id).toString().replace(/^deck[-_]/i, '')}`;
             const currentUser = AppState.user;
             const creatorDisplayName = deck.creatorName || (deck.creatorEmail ? deck.creatorEmail : currentUser ? currentUser.name : 'Learner');
 
