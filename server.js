@@ -61,17 +61,26 @@ let dbPool = null;
         const dbPassword = process.env.DB_PASSWORD || '';
         const dbName = process.env.DB_NAME || 'bloom_db';
 
-        // Connect to MySQL server and ensure DB exists
-        const rootConn = await mysql.createConnection({
-            host: dbHost,
-            port: dbPort,
-            user: dbUser,
-            password: dbPassword,
-            multipleStatements: true
-        });
+        // Automatically enable SSL for cloud providers (Aiven, PlanetScale, AWS RDS, etc.) or when DB_SSL env is set
+        const isLocalHost = dbHost === 'localhost' || dbHost === '127.0.0.1';
+        const useSsl = process.env.DB_SSL === 'true' || process.env.DB_SSL === '1' || (!isLocalHost && process.env.DB_SSL !== 'false');
+        const sslConfig = useSsl ? { rejectUnauthorized: false } : undefined;
 
-        await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
-        await rootConn.end();
+        // Try creating DB if permissions allow, skip if DB already exists on cloud DB (Aiven)
+        try {
+            const rootConn = await mysql.createConnection({
+                host: dbHost,
+                port: dbPort,
+                user: dbUser,
+                password: dbPassword,
+                ssl: sslConfig,
+                multipleStatements: true
+            });
+            await rootConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`);
+            await rootConn.end();
+        } catch (e) {
+            console.log(`ℹ️ Skip root DB creation check (${e.message}). Connecting directly to pool...`);
+        }
 
         dbPool = mysql.createPool({
             host: dbHost,
@@ -79,6 +88,7 @@ let dbPool = null;
             user: dbUser,
             password: dbPassword,
             database: dbName,
+            ssl: sslConfig,
             waitForConnections: true,
             connectionLimit: 10,
             multipleStatements: true

@@ -2895,12 +2895,13 @@ function toggleAuthPageMode(signUp = false) {
 const RENDER_API_URL = 'https://bloom-j4ws.onrender.com';
 
 function getApiUrl(endpoint) {
-    const hostname = window.location.hostname || '';
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        if (window.location.port === '5000') {
-            return endpoint;
+    if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+        const hostname = window.location.hostname || '';
+        const port = window.location.port || '';
+        if ((hostname === 'localhost' || hostname === '127.0.0.1') && port !== '5000' && port !== '') {
+            return `http://${hostname}:5000${endpoint}`;
         }
-        return `http://${hostname}:5000${endpoint}`;
+        return endpoint;
     }
     return `${RENDER_API_URL}${endpoint}`;
 }
