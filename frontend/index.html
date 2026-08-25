@@ -1089,6 +1089,12 @@
                 <button type="button" class="btn-ghost" id="modal-close-import-deck-btn" style="padding: 4px 8px;">✕</button>
             </div>
             <form id="form-import-deck">
+                <!-- Inline Error Alert Box inside Import Deck Modal -->
+                <div id="import-deck-error-box" style="display: none; background: rgba(229, 62, 62, 0.1); border: 1px dashed var(--error, #e53e3e); color: var(--error, #e53e3e); border-radius: 10px; padding: 12px; font-size: 0.85rem; margin-bottom: 16px; align-items: center; gap: 8px;">
+                    <i class="fi fi-rr-cross-circle" style="font-size: 1.1rem; flex-shrink: 0;"></i>
+                    <span id="import-deck-error-text">No cards found with this Deck ID Code.</span>
+                </div>
+
                 <div class="form-group">
                     <label class="form-label">Deck ID Code</label>
                     <input type="text" id="input-import-deck-code" class="form-input" placeholder="e.g. DEC-384912" required style="font-family: var(--font-mono); text-transform: uppercase; font-weight: 700; font-size: 1.1rem; letter-spacing: 1px; text-align: center;">
@@ -1098,6 +1104,25 @@
                     <button type="submit" class="btn-primary" style="flex: 1; padding: 12px; font-size: 0.9rem;">Import &amp; Study</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Cards Not Found by ID Alert -->
+    <div id="modal-card-not-found" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 420px; text-align: center; padding: 28px 24px;">
+            <div style="width: 56px; height: 56px; background: rgba(229, 62, 62, 0.12); color: var(--error, #e53e3e); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.6rem;">
+                <i class="fi fi-rr-search-alt"></i>
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: var(--text-primary);">Cards Not Found</h3>
+            <p style="font-size: 0.86rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;" id="card-not-found-msg">
+                No flashcards deck found with this Deck ID Code. Please check the ID and try again.
+            </p>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-primary" id="btn-close-card-not-found-modal" style="width: 100%; padding: 12px; font-size: 0.9rem;">
+                    Try Again
+                </button>
+            </div>
         </div>
     </div>
 

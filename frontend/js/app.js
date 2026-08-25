@@ -1608,6 +1608,8 @@ function renderFlashcardsScreen() {
 
     const copyShareBtn = document.getElementById('btn-copy-share-deck-code');
     if (copyShareBtn) copyShareBtn.onclick = copyShareDeckCode;
+    const closeCardNotFoundBtn = document.getElementById('btn-close-card-not-found-modal');
+    if (closeCardNotFoundBtn) closeCardNotFoundBtn.onclick = closeCardNotFoundErrorModal;
 }
 
 /* Share Private Deck Modal */
@@ -1649,8 +1651,38 @@ function copyShareDeckCode() {
     }
 }
 
-/* Import Shared Private Deck Modal */
+/* Import Shared Private Deck Modal & Errors */
+function showImportDeckError(msg) {
+    const errBox = document.getElementById('import-deck-error-box');
+    const errText = document.getElementById('import-deck-error-text');
+    if (errText) errText.textContent = msg;
+    if (errBox) errBox.style.display = 'flex';
+}
+
+function hideImportDeckError() {
+    const errBox = document.getElementById('import-deck-error-box');
+    if (errBox) errBox.style.display = 'none';
+}
+
+function openCardNotFoundErrorModal(msg) {
+    const modal = document.getElementById('modal-card-not-found');
+    const msgEl = document.getElementById('card-not-found-msg');
+    if (msgEl) msgEl.textContent = msg || "No flashcards deck found with this Deck ID Code. Please verify the ID and try again.";
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeCardNotFoundErrorModal() {
+    const modal = document.getElementById('modal-card-not-found');
+    if (modal) modal.style.display = 'none';
+    const codeInput = document.getElementById('input-import-deck-code');
+    if (codeInput) {
+        codeInput.focus();
+        codeInput.select();
+    }
+}
+
 function openImportDeckModal() {
+    hideImportDeckError();
     const modal = document.getElementById('modal-import-deck');
     if (modal) {
         modal.style.display = 'flex';
@@ -1667,10 +1699,12 @@ function closeImportDeckModal() {
     if (modal) modal.style.display = 'none';
     const form = document.getElementById('form-import-deck');
     if (form) form.reset();
+    hideImportDeckError();
 }
 
 async function handleImportDeckSubmit(e) {
     e.preventDefault();
+    hideImportDeckError();
     const codeInput = document.getElementById('input-import-deck-code');
     const code = codeInput ? codeInput.value.trim().toUpperCase() : '';
 
@@ -1701,10 +1735,14 @@ async function handleImportDeckSubmit(e) {
             }
         } else {
             const errData = await response.json();
-            alert(errData.error || "No private deck found with this Deck ID Code.");
+            const errorMsg = errData.error || `No cards found with Deck ID Code "${code}".`;
+            showImportDeckError(errorMsg);
+            openCardNotFoundErrorModal(errorMsg);
         }
     } catch (err) {
-        alert("Failed to import deck. Please check your internet connection.");
+        const errorMsg = "Failed to import deck. Please check your internet connection.";
+        showImportDeckError(errorMsg);
+        openCardNotFoundErrorModal(errorMsg);
     }
 }
 
