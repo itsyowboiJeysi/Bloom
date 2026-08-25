@@ -895,6 +895,33 @@
         </div>
     </div>
 
+    <!-- MODAL: Deck Created Success Confirmation -->
+    <div id="modal-deck-created-success" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 440px; text-align: center; padding: 28px 24px;">
+            <div style="width: 56px; height: 56px; background: rgba(82, 183, 136, 0.15); color: var(--primary-600); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.8rem;">
+                <i class="fi fi-sr-checkbox"></i>
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 6px; color: var(--text-primary);">Deck Created Successfully!</h3>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.4;">
+                <strong id="created-deck-title-text" style="color: var(--primary-600);">New Deck</strong> is now ready. You can start adding flashcards or share your Deck ID Code!
+            </p>
+
+            <div style="background: var(--surface-card); border-radius: 12px; padding: 14px; border: 1px dashed var(--primary-600); margin-bottom: 20px;">
+                <div style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">YOUR DECK ID CODE</div>
+                <div style="font-family: var(--font-mono); font-size: 1.3rem; font-weight: 800; color: var(--primary-600); letter-spacing: 1.5px;" id="created-deck-code-text">DEC-000000</div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-primary" id="btn-created-deck-add-card" style="flex: 1; padding: 12px; font-size: 0.9rem;">
+                    + Add First Card
+                </button>
+                <button type="button" class="btn-outline" id="btn-close-created-deck-modal" style="padding: 12px 18px; font-size: 0.9rem;">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: Add Card to Deck -->
     <div id="modal-add-card" class="modal-overlay" style="display: none;">
         <div class="modal-card" style="max-width: 480px;">

@@ -1746,7 +1746,36 @@ async function handleImportDeckSubmit(e) {
     }
 }
 
-/* Flashcard Deck Creation Modal */
+/* Flashcard Deck Creation Modal & Confirmation Modal */
+let newlyCreatedDeckId = null;
+
+function openDeckCreatedSuccessModal(deck) {
+    if (!deck) return;
+    newlyCreatedDeckId = deck.id;
+
+    const titleEl = document.getElementById('created-deck-title-text');
+    const codeEl = document.getElementById('created-deck-code-text');
+
+    if (titleEl) titleEl.textContent = deck.title || "New Deck";
+    const shareCode = deck.shareCode || `DEC-${(deck.dbId || deck.id).toString().replace('deck_', '').replace('deck-', '')}`;
+    if (codeEl) codeEl.textContent = shareCode;
+
+    const modal = document.getElementById('modal-deck-created-success');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeDeckCreatedSuccessModal() {
+    const modal = document.getElementById('modal-deck-created-success');
+    if (modal) modal.style.display = 'none';
+}
+
+function handleAddCardFromCreatedModal() {
+    closeDeckCreatedSuccessModal();
+    if (newlyCreatedDeckId) {
+        openAddCardModal(newlyCreatedDeckId);
+    }
+}
+
 function openCreateDeckModal() {
     const modal = document.getElementById('modal-create-deck');
     if (modal) {
@@ -2085,6 +2114,12 @@ function attachFlashcardModalHandlers() {
     if (closeCreateBtn) closeCreateBtn.onclick = closeCreateDeckModal;
     if (cancelCreateBtn) cancelCreateBtn.onclick = closeCreateDeckModal;
 
+    const closeCreatedSuccessBtn = document.getElementById('btn-close-created-deck-modal');
+    if (closeCreatedSuccessBtn) closeCreatedSuccessBtn.onclick = closeDeckCreatedSuccessModal;
+
+    const addCardCreatedModalBtn = document.getElementById('btn-created-deck-add-card');
+    if (addCardCreatedModalBtn) addCardCreatedModalBtn.onclick = handleAddCardFromCreatedModal;
+
     const createForm = document.getElementById('form-create-deck');
     if (createForm) {
         createForm.onsubmit = async (e) => {
@@ -2129,9 +2164,10 @@ function attachFlashcardModalHandlers() {
             saveFlashcardDecksToStorage();
             closeCreateDeckModal();
             renderFlashcardsScreen();
+            showXpToastNotification(`<i class="fi fi-rr-check" style="margin-right: 6px;"></i> Flashcard deck "${newDeck.title}" created successfully!`);
 
-            // Prompt user immediately to add first card
-            openAddCardModal(newDeck.id);
+            // Prompt user with deck creation success pop-up modal
+            openDeckCreatedSuccessModal(newDeck);
         };
     }
 
