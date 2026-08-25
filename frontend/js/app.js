@@ -1612,14 +1612,29 @@ function renderFlashcardsScreen() {
     if (closeCardNotFoundBtn) closeCardNotFoundBtn.onclick = closeCardNotFoundErrorModal;
 }
 
+/* Universal Flexible Deck Finder Helper */
+function findDeckById(deckId) {
+    if (!deckId) return null;
+    const strId = String(deckId);
+    const numericPart = strId.replace(/^deck[-_]/i, '');
+    return AppState.flashcards.decks.find(d => {
+        if (!d) return false;
+        if (String(d.id) === strId) return true;
+        if (d.dbId && (String(d.dbId) === strId || String(d.dbId) === numericPart)) return true;
+        if (d.id && String(d.id).replace(/^deck[-_]/i, '') === numericPart) return true;
+        if (d.shareCode && d.shareCode.toUpperCase() === strId.toUpperCase()) return true;
+        return false;
+    }) || null;
+}
+
 /* Share Private Deck Modal */
 let activeShareDeckCode = null;
 
 function openShareDeckModal(deckId) {
-    const deck = AppState.flashcards.decks.find(d => d.id === deckId);
+    const deck = findDeckById(deckId);
     if (!deck) return;
 
-    const shareCode = deck.shareCode || `DEC-${(deck.dbId || deck.id).toString().replace('deck_', '')}`;
+    const shareCode = deck.shareCode || `DEC-${(deck.dbId || deck.id).toString().replace(/^deck[-_]/i, '')}`;
     activeShareDeckCode = shareCode;
 
     const titleEl = document.getElementById('share-deck-title');
@@ -1794,7 +1809,7 @@ function closeCreateDeckModal() {
 
 /* Add Flashcard Modal */
 function openAddCardModal(deckId) {
-    const deck = AppState.flashcards.decks.find(d => d.id === deckId || d.id == deckId || d.dbId == deckId || (d.dbId && `deck_${d.dbId}` === deckId));
+    const deck = findDeckById(deckId);
     if (!deck) return;
 
     const deckIdInput = document.getElementById('input-add-card-deck-id');
@@ -1829,10 +1844,10 @@ function deleteFlashcardDeck(deckId) {
 }
 
 function openDeleteDeckModal(deckId) {
-    const deck = AppState.flashcards.decks.find(d => d.id === deckId);
+    const deck = findDeckById(deckId);
     if (!deck) return;
 
-    pendingDeleteDeckId = deckId;
+    pendingDeleteDeckId = deck.id || deckId;
 
     const titleEl = document.getElementById('delete-deck-title');
     if (titleEl) titleEl.textContent = `"${deck.title}"`;
@@ -1851,20 +1866,25 @@ async function confirmDeleteDeck() {
     if (!pendingDeleteDeckId) return;
 
     const deckId = pendingDeleteDeckId;
-    const deck = AppState.flashcards.decks.find(d => d.id === deckId);
+    const deck = findDeckById(deckId);
 
     if (deck) {
-        AppState.flashcards.decks = AppState.flashcards.decks.filter(d => d.id !== deckId);
+        const targetId = deck.id;
+        const targetDbId = deck.dbId;
+
+        AppState.flashcards.decks = AppState.flashcards.decks.filter(d => d !== deck && d.id !== targetId);
         saveFlashcardDecksToStorage();
 
-        if (deck.dbId || (typeof deck.id === 'string' && deck.id.startsWith('deck_'))) {
-            const numericId = deck.dbId || parseInt(deck.id.replace('deck_', ''), 10);
+        const numericId = targetDbId || (typeof targetId === 'string' && targetId.replace(/^deck[-_]/i, ''));
+        if (numericId && !isNaN(parseInt(numericId, 10))) {
             try {
-                await fetch(getApiUrl(`/api/decks/${numericId}`), { method: 'DELETE' });
+                await fetch(getApiUrl(`/api/decks/${parseInt(numericId, 10)}`), { method: 'DELETE' });
+                console.log(`💾 Deleted deck ID ${numericId} from backend.`);
             } catch (e) {
                 console.warn("Backend deck delete warning:", e.message);
             }
         }
+        showXpToastNotification(`<i class="fi fi-rr-trash" style="margin-right: 6px;"></i> Deck "${deck.title}" deleted.`);
     }
 
     closeDeleteDeckModal();
@@ -1886,7 +1906,7 @@ let activeStudyState = {
 let deckTimerInterval = null;
 
 function openStudyModal(deckId) {
-    const deck = AppState.flashcards.decks.find(d => d.id === deckId);
+    const deck = findDeckById(deckId);
     if (!deck) return;
 
     if (!deck.cards || deck.cards.length === 0) {
