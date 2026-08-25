@@ -920,7 +920,7 @@ function restoreActiveRoomSession() {
     if (AppState.rooms.activeRoom) return;
 
     try {
-        const savedItem = localStorage.getItem('bloom_active_room') || localStorage.getItem('bloom_last_joined_room');
+        const savedItem = localStorage.getItem('bloom_active_room');
         if (savedItem) {
             const savedRoom = JSON.parse(savedItem);
             let room = AppState.rooms.publicRooms.find(r => r.id === savedRoom.id || r.code === savedRoom.code) ||
