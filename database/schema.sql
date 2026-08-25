@@ -1,8 +1,5 @@
 -- Bloom Database Schema Initial Version
 
-CREATE DATABASE IF NOT EXISTS bloom_db;
-USE bloom_db;
-
 -- 1. Users Table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,

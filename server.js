@@ -96,7 +96,9 @@ let dbPool = null;
 
         const schemaPath = path.join(__dirname, 'database', 'schema.sql');
         if (fs.existsSync(schemaPath)) {
-            const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+            let schemaSql = fs.readFileSync(schemaPath, 'utf8');
+            schemaSql = schemaSql.replace(/CREATE DATABASE IF NOT EXISTS [^;]+;/gi, '')
+                                 .replace(/USE [^;]+;/gi, '');
             const conn = await dbPool.getConnection();
             await conn.query(schemaSql);
             // Ensure share_code column exists for private deck ID sharing
