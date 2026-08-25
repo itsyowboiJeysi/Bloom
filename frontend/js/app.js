@@ -279,13 +279,41 @@ function exportLearnerStatsImage() {
         exportContainer.style.left = '-9999px';
         exportContainer.style.top = '-9999px';
 
-        const image = canvas.toDataURL("image/png");
-        const link = document.createElement('a');
-        link.download = `Bloom-Learner-Stats-${(user.name || 'Scholar').replace(/\s+/g, '_')}.png`;
-        link.href = image;
-        link.click();
+        const fileName = `Bloom-Learner-Stats-${(user.name || 'Scholar').replace(/\s+/g, '_')}.png`;
+        const dataUrl = canvas.toDataURL("image/png");
 
-        showXpToastNotification(`<i class="fi fi-rr-check" style="margin-right: 6px;"></i> Transparent Story Stats PNG downloaded!`);
+        const triggerDownload = () => {
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = dataUrl;
+            link.click();
+            showXpToastNotification(`<i class="fi fi-rr-check" style="margin-right: 6px;"></i> Image downloaded! (Check your Files app Downloads folder)`);
+        };
+
+        if (canvas.toBlob && navigator.canShare) {
+            canvas.toBlob(blob => {
+                if (!blob) {
+                    triggerDownload();
+                    return;
+                }
+                const file = new File([blob], fileName, { type: 'image/png' });
+                if (navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Bloom Learner Stats',
+                        text: 'Check out my study stats on Bloom!'
+                    }).then(() => {
+                        showXpToastNotification(`<i class="fi fi-rr-check" style="margin-right: 6px;"></i> Image saved!`);
+                    }).catch(err => {
+                        if (err.name !== 'AbortError') triggerDownload();
+                    });
+                } else {
+                    triggerDownload();
+                }
+            }, 'image/png');
+        } else {
+            triggerDownload();
+        }
     }).catch(err => {
         console.error("Export error:", err);
         exportContainer.style.position = 'absolute';
@@ -3005,9 +3033,16 @@ function toggleAuthPageMode(signUp = false) {
 const RENDER_API_URL = 'https://bloom-j4ws.onrender.com';
 
 function getApiUrl(endpoint) {
+    // Inside Capacitor Android app, hostname is localhost with no port (port === '')
+    if (window.Capacitor || (window.location.hostname === 'localhost' && window.location.port !== '5000' && window.location.port !== '3000')) {
+        return `${RENDER_API_URL}${endpoint}`;
+    }
     if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
         const hostname = window.location.hostname || '';
         const port = window.location.port || '';
+        if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '5000') {
+            return endpoint;
+        }
         if ((hostname === 'localhost' || hostname === '127.0.0.1') && port !== '5000' && port !== '') {
             return `http://${hostname}:5000${endpoint}`;
         }
