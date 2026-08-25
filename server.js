@@ -781,24 +781,53 @@ app.get('/api/decks/import/:code', async (req, res) => {
 
 app.post('/api/decks/add-card', async (req, res) => {
     try {
-        const { deckId, front, back } = req.body;
+        const { deckId, front, back, deckTitle, deckSubject, email } = req.body;
         if (!front || !back) {
             return res.status(400).json({ error: 'Card front and back are required.' });
         }
 
         let dbCardId = null;
-        const numericDeckId = deckId && typeof deckId === 'string' && deckId.startsWith('deck_')
-            ? parseInt(deckId.replace('deck_', ''), 10)
-            : parseInt(deckId, 10);
+        let numericDeckId = null;
 
-        if (isDbConnected && dbPool && !isNaN(numericDeckId)) {
+        if (deckId !== undefined && deckId !== null) {
+            const cleaned = String(deckId).replace(/^deck[-_]/i, '');
+            const parsed = parseInt(cleaned, 10);
+            if (!isNaN(parsed)) numericDeckId = parsed;
+        }
+
+        if (isDbConnected && dbPool) {
             try {
-                const [result] = await dbPool.query(
-                    'INSERT INTO flashcards (deck_id, front, back) VALUES (?, ?, ?)',
-                    [numericDeckId, front, back]
-                );
-                dbCardId = result.insertId;
-                console.log(`💾 Added card to deck ID ${numericDeckId} in MySQL (Card ID: ${dbCardId})`);
+                if (numericDeckId) {
+                    const [dRows] = await dbPool.query('SELECT id FROM flashcard_decks WHERE id = ?', [numericDeckId]);
+                    if (dRows.length > 0) {
+                        const [result] = await dbPool.query(
+                            'INSERT INTO flashcards (deck_id, front, back) VALUES (?, ?, ?)',
+                            [numericDeckId, front, back]
+                        );
+                        dbCardId = result.insertId;
+                        console.log(`💾 Added card to deck ID ${numericDeckId} in MySQL (Card ID: ${dbCardId})`);
+                    }
+                }
+
+                // If deck wasn't found in DB yet, create the deck first
+                if (!dbCardId && email && deckTitle) {
+                    const [uRows] = await dbPool.query('SELECT id FROM users WHERE email = ?', [email.toLowerCase().trim()]);
+                    if (uRows.length > 0) {
+                        const userId = uRows[0].id;
+                        const shareCode = `DEC-${Math.floor(100000 + Math.random() * 900000)}`;
+                        const [dRes] = await dbPool.query(
+                            'INSERT INTO flashcard_decks (user_id, title, category, description, share_code) VALUES (?, ?, ?, ?, ?)',
+                            [userId, deckTitle, deckSubject || 'General', '', shareCode]
+                        );
+                        const newDbDeckId = dRes.insertId;
+                        const [cRes] = await dbPool.query(
+                            'INSERT INTO flashcards (deck_id, front, back) VALUES (?, ?, ?)',
+                            [newDbDeckId, front, back]
+                        );
+                        dbCardId = cRes.insertId;
+                        console.log(`💾 Created deck '${deckTitle}' (ID: ${newDbDeckId}) and added card (ID: ${dbCardId}) in MySQL`);
+                    }
+                }
             } catch (dbErr) {
                 console.error('MySQL add card error:', dbErr.message);
             }

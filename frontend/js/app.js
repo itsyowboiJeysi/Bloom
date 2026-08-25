@@ -1794,7 +1794,7 @@ function closeCreateDeckModal() {
 
 /* Add Flashcard Modal */
 function openAddCardModal(deckId) {
-    const deck = AppState.flashcards.decks.find(d => d.id === deckId);
+    const deck = AppState.flashcards.decks.find(d => d.id === deckId || d.id == deckId || d.dbId == deckId || (d.dbId && `deck_${d.dbId}` === deckId));
     if (!deck) return;
 
     const deckIdInput = document.getElementById('input-add-card-deck-id');
@@ -1806,7 +1806,12 @@ function openAddCardModal(deckId) {
     if (modal) {
         modal.style.display = 'flex';
         const frontInput = document.getElementById('input-card-front');
-        if (frontInput) frontInput.focus();
+        if (frontInput) {
+            frontInput.value = '';
+            frontInput.focus();
+        }
+        const backInput = document.getElementById('input-card-back');
+        if (backInput) backInput.value = '';
     }
 }
 
@@ -2187,7 +2192,7 @@ function attachFlashcardModalHandlers() {
 
             if (!deckId || !front || !back) return;
 
-            const deck = AppState.flashcards.decks.find(d => d.id === deckId);
+            const deck = AppState.flashcards.decks.find(d => d.id === deckId || d.id == deckId || d.dbId == deckId || (d.dbId && `deck_${d.dbId}` === deckId));
             if (deck) {
                 let newCard = {
                     id: `card-${Date.now()}`,
@@ -2203,7 +2208,10 @@ function attachFlashcardModalHandlers() {
                         body: JSON.stringify({
                             deckId: deck.dbId || deck.id,
                             front: front,
-                            back: back
+                            back: back,
+                            deckTitle: deck.title,
+                            deckSubject: deck.subject,
+                            email: AppState.user && AppState.user.email ? AppState.user.email : ''
                         })
                     });
                     if (response.ok) {
@@ -2222,6 +2230,7 @@ function attachFlashcardModalHandlers() {
                 saveFlashcardDecksToStorage();
                 closeAddCardModal();
                 renderFlashcardsScreen();
+                showXpToastNotification(`<i class="fi fi-rr-check" style="margin-right: 6px;"></i> Flashcard added to "${deck.title}"!`);
             }
         };
     }
